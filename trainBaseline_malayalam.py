@@ -253,25 +253,3 @@ def predict_with_rules_malayalam(texts):
 
     return fixed
 
-# ============================================================
-# 14. Small demo to verify behavior
-# ============================================================
-
-demo_texts = [
-    "ആശയുണ്ട്",
-    "ആശ ഇല്ല",
-    "ഞങ്ങൾ വിജയിക്കും",
-    "ഇത് നല്ല ദിവസം ആണ്",
-    "ആശ നഷ്ടപ്പെട്ടു",
-    "കഴിഞ്ഞു, ഇനി മാർഗ്ഗമില്ല",
-]
-
-print("\n=== RAW model predictions (no rules) ===")
-raw_preds = model.predict(demo_texts)
-for t, p in zip(demo_texts, raw_preds):
-    print(f"{p} -> {t}")
-
-print("\n=== Predictions WITH rules (predict_with_rules_malayalam) ===")
-rule_preds = predict_with_rules_malayalam(demo_texts)
-for t, p in zip(demo_texts, rule_preds):
-    print(f"{p} -> {t}")
