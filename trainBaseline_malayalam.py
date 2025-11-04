@@ -190,14 +190,14 @@ print("Test Accuracy:", accuracy_score(y_test, y_test_pred))
 
 model_path = "hope_malayalam_model.pkl"
 joblib.dump(model, model_path)
-print(f"\n✅ Malayalam model saved as {model_path}")
+print(f"\n Malayalam model saved as {model_path}")
 
 # ============================================================
 # 12. (Optional) Reload model for inference
 # ============================================================
 
 model = joblib.load(model_path)
-print("\n✅ Malayalam model reloaded for inference")
+print("\n Malayalam model reloaded for inference")
 
 # ============================================================
 # 13. Rule-based wrapper for Malayalam predictions
@@ -242,13 +242,13 @@ def predict_with_rules_malayalam(texts):
         # 1) Explicit positive hope → force Hope_speech (1)
         if contains_any(t, POS_PATTERNS):
             fixed[i] = 1
-            print(f"✅ Positive override → Hope_speech (1): {txt}")
+            print(f" Positive override → Hope_speech (1): {txt}")
             continue
 
         # 2) Explicit negative/“no hope” → force Non_hope_speech (0)
         if contains_any(t, NEG_PATTERNS):
             fixed[i] = 0
-            print(f"⚠️ Negative override → Non_hope_speech (0): {txt}")
+            print(f" Negative override → Non_hope_speech (0): {txt}")
             continue
 
     return fixed

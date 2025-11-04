@@ -114,4 +114,4 @@ if test_df is not None:
 # 10. Save model
 # ==========
 joblib.dump(model, "hope_tamil_model.pkl")
-print("\n✅ Model saved as hope_tamil_model.pkl")
+print("\n Model saved as hope_tamil_model.pkl")

@@ -138,14 +138,14 @@ if test_df is not None:
 
 model_path = "hope_english_model.pkl"
 joblib.dump(model, model_path)
-print(f"\n✅ Model saved as {model_path}")
+print(f"\n Model saved as {model_path}")
 
 # ============================================================
 # 11. Load model again (like you do in testing scripts)
 # ============================================================
 
 model = joblib.load(model_path)
-print("\n✅ Model reloaded for inference")
+print("\n Model reloaded for inference")
 
 # ============================================================
 # 12. Wrapper with rules around the model
@@ -199,13 +199,13 @@ def predict_with_rules_english(texts):
         # 1) Explicit positive-hope phrases → force Hope_speech (1)
         if contains_any_substring(low, POS_PATTERNS):
             fixed[i] = 1
-            print(f"✅ Positive override → Hope_speech (1): {txt}")
+            print(f" Positive override → Hope_speech (1): {txt}")
             continue
 
         # 2) Explicit negative-hope phrases → force Non_hope_speech (0)
         if contains_any_substring(low, NEG_PATTERNS):
             fixed[i] = 0
-            print(f"⚠️ Negative override → Non_hope_speech (0): {txt}")
+            print(f" Negative override → Non_hope_speech (0): {txt}")
             continue
 
     return fixed

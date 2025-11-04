@@ -92,7 +92,7 @@ train_df.to_csv(train_parsed_path, index=False, encoding="utf-8")
 dev_df.to_csv(dev_parsed_path, index=False, encoding="utf-8")
 test_df.to_csv(test_parsed_path, index=False, encoding="utf-8")
 
-print("\n✅ Saved parsed files:")
+print("\n Saved parsed files:")
 print("  Train parsed:", train_parsed_path)
 print("  Dev parsed:  ", dev_parsed_path)
 print("  Test parsed: ", test_parsed_path)
@@ -153,6 +153,6 @@ over_path  = base / "english_hope_train_balanced_oversample.csv"
 train_balanced_under.to_csv(under_path, index=False, encoding="utf-8")
 train_balanced_over.to_csv(over_path, index=False, encoding="utf-8")
 
-print("\n✅ Saved balanced train files:")
+print("\n Saved balanced train files:")
 print("  Undersampled:", under_path)
 print("  Oversampled: ", over_path)

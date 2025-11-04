@@ -111,7 +111,7 @@ train_df.to_csv(train_out, index=False, encoding="utf-8")
 dev_df.to_csv(dev_out, index=False, encoding="utf-8")
 test_df.to_csv(test_out, index=False, encoding="utf-8")
 
-print("\n✅ Saved:")
+print("\n Saved:")
 print("  Train (corrected):", train_out)
 print("  Dev (parsed):     ", dev_out)
 print("  Test (parsed):    ", test_out)
