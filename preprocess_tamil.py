@@ -17,10 +17,7 @@ test_path  = base / "tamil_hope_first_test.csv"
 # ============================================================
 
 def split_text_label(s: str):
-    """
-    Input example: 'இது ஒரு நல்ல நாள்;Hope_speech;'
-    Output: text='இது ஒரு நல்ல நாள்', label_str='Hope_speech'
-    """
+
     parts = str(s).split(';')
     # Remove empty tokens (because line ends with a ';')
     tokens = [p for p in parts if p != ""]

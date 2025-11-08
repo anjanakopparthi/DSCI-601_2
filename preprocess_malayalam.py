@@ -6,7 +6,7 @@ import os
 # Configuration ( your Malayalam dataset path)
 # ---------------------------------------------------
 input_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\malayalam_dev.csv"
-lang = "malayalam"   # can be 'english', 'tamil', or 'malayalam'
+lang = "malayalam"   
 
 
 # ---------------------------------------------------
@@ -27,7 +27,7 @@ def clean_text(text, lang):
     # Normalize spaces
     text = re.sub(r"\s+", " ", text)
 
-    # Lowercase only for English (not Malayalam)
+    # Lowercase only for English 
     if lang.lower() == "english":
         text = text.lower()
 
