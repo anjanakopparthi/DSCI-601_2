@@ -208,5 +208,5 @@ def predict_with_rules_english(texts):
             print(f" Negative override → Non_hope_speech (0): {txt}")
             continue
 
-    return fixed
+    return base_preds, fixed
 
