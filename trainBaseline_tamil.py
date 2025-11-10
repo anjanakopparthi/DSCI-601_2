@@ -8,8 +8,7 @@ import joblib
 import os
 
 # ==========
-# 1. Paths to your (NEW) processed CSVs
-#    Use the corrected / parsed files you downloaded from ChatGPT
+# 1. Paths
 # ==========
 train_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\tamil_hope_first_train_corrected.csv"
 dev_path   = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\tamil_hope_first_dev_parsed.csv"

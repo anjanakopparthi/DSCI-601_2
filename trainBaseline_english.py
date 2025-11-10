@@ -10,11 +10,9 @@ from sklearn.model_selection import train_test_split
 
 # ============================================================
 # 1. Paths to your ENGLISH processed CSVs
-#    Adjust these paths to match your local files
 # ============================================================
 
-# Choose ONE train file: balanced undersample, oversample, or original parsed.
-# A) Balanced (undersampled) train
+
 train_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\english_hope_train_balanced_undersample.csv"
 
 # B) Balanced (oversampled) train
@@ -63,8 +61,6 @@ if test_df is not None:
 
 # ============================================================
 # 5. Train–validation split
-#    If dev set is available, use it as validation.
-#    Otherwise, split from train.
 # ============================================================
 
 X_train = train_df["text"]
@@ -98,7 +94,7 @@ model = Pipeline([
     )),
     ('clf', LogisticRegression(
         max_iter=500,
-        class_weight='balanced',  # still useful even if balanced
+        class_weight='balanced', 
         n_jobs=-1
     ))
 ])
@@ -120,7 +116,7 @@ print(classification_report(y_dev, y_pred, digits=3))
 print("Validation Accuracy:", accuracy_score(y_dev, y_pred))
 
 # ============================================================
-# 9. Evaluate on test set if available
+# 9. Evaluate on test set 
 # ============================================================
 
 if test_df is not None:

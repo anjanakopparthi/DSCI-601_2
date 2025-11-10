@@ -10,8 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 
 # ============================================================
-# 1. Paths to your MALAYALAM original CSVs
-#    (these are the ones you uploaded: malayalam_train/dev/test.csv)
+# 1. Paths 
 # ============================================================
 
 train_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\malayalam_train.csv"
@@ -20,7 +19,7 @@ test_path  = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\
 
 # ============================================================
 # 2. Load raw data
-#    Expecting columns: 'text', 'label' (but we'll REBUILD labels)
+#    Expecting columns: 'text', 'label' 
 # ============================================================
 
 train_df_raw = pd.read_csv(train_path)
@@ -43,7 +42,7 @@ def derive_label_str(text: str) -> str:
         return "Non_hope_speech"
     if "Hope_speech" in s:
         return "Hope_speech"
-    return None  # rare edge case; we can drop later if needed
+    return None  
 
 for df in (train_df_raw, dev_df_raw, test_df_raw):
     df["label_str"] = df["text"].apply(derive_label_str)
@@ -154,7 +153,7 @@ model = Pipeline([
     )),
     ('clf', LogisticRegression(
         max_iter=500,
-        class_weight='balanced',  # okay to keep; helps robustness
+        class_weight='balanced',  
         n_jobs=-1
     ))
 ])
