@@ -108,11 +108,9 @@ python tests/test_malayalam.py
 
 Each script:
 
-loads the correct .pkl model
-
-reads sample inputs
-
-prints predicted labels
+- loads the correct .pkl model
+- reads sample inputs
+- prints predicted labels
 
 Example output
 Input: "there is hope"
