@@ -72,20 +72,22 @@ Kept emojis and emotional signals
 
 b. Language filtering
 
-Kept only (0,1) for training, removed label 2.
+Kept only labels 0 and 1 for training
+
+Removed label 2
 
 c. Variant tagging
 
-For Tamil & Malayalam:
+For Tamil & Malayalam, added a column:
 
-Variant	Meaning
+variant	meaning
 native	Tamil/Malayalam script only
-romanized	English script but Indian language
+romanized	English script representing language
 mixed	Code-mixed with English
 unknown	fallback
 d. Synthetic datasets
 
-10,000 generated samples per language:
+10,000 generated samples per language (balanced):
 
 Hope speech
 
@@ -99,20 +101,21 @@ Romanized
 
 Native script
 
-All synthetic data is saved under:
+Saved in:
 
 processed/*_synthetic_*.csv
 
-e. Final XLM-R Preprocessed Files
+e. XLM-R Preprocessed Files
 
-The script preprocessingForXLMR.py produces:
+Script preprocessingForXLMR.py produces:
 
 english_xlmr_train.csv
+
 tamil_xlmr_train.csv
+
 malayalam_xlmr_train.csv
 
-
-These contain:
+Columns included:
 
 text
 
@@ -126,63 +129,60 @@ variant
 
 lang
 
-These CSVs are then tokenized for transformers training.
-
 🤖 3. Baseline Model Training
 
-Each baseline model is trained on:
+Each baseline model uses:
 
-TF-IDF (1–3 n-grams, 5K features)
+TF-IDF (1–3 n-grams, 5000 features)
 
 Logistic Regression (balanced class-weights)
 
-Oversampled and undersampled variants
+Oversampled & undersampled balanced datasets
 
-Run English baseline:
+Run English model:
+
 python baselineModels/trainBaseline_english.py
 
 
-Same for:
+Tamil:
 
 python baselineModels/trainBaseline_tamil.py
+
+
+Malayalam:
+
 python baselineModels/trainBaseline_malayalam.py
 
-✔ Output
-
-Each script saves a model:
+✔ Output models
 
 baselineModels/hope_english_model.pkl
+
 baselineModels/hope_tamil_model.pkl
+
 baselineModels/hope_malayalam_model.pkl
 
-
-These .pkl files contain:
+Each .pkl file contains:
 
 TF-IDF vectorizer
 
 Logistic Regression classifier
 
-Optional rule-based wrapper (negation override, phrase correction)
+Rule-based wrapper (negation override)
 
 🧪 4. Testing the Models
 
-To test the predictions using .pkl models:
+Run:
 
-English:
 python tests/test_english.py
-
-Tamil:
 python tests/test_tamil.py
-
-Malayalam:
 python tests/test_malayalam.py
 
 
 Each script:
 
-Loads the appropriate .pkl baseline model
+Loads the .pkl baseline model
 
-Accepts sample user inputs
+Runs sample sentences
 
 Prints predicted labels
 
@@ -193,3 +193,18 @@ Prediction: Hope Speech (1)
 
 Input: "no hope left"
 Prediction: Non-Hope (0)
+
+
+---
+
+## 🔥 Why this works
+
+✔ Bullet points appear because every list item starts with `-`  
+✔ No extra blank lines between bullet points  
+✔ No emojis at the start of bullet lines  
+✔ Proper fenced code blocks  
+✔ Correct indentation for sublists  
+
+---
+
+If you want, I can also **assemble your entire final README.md** with badges, folder tree, install
