@@ -15,38 +15,6 @@ The project includes:
 
 This work is part of an applied data-science research project on hope speech detection in low-resource and code-mixed environments.
 
-Repository Structure
-DSCI-601_2/
-│
-├── raw/                      # Raw input datasets (English/Malayalam/Tamil)
-│
-├── processed/                # Cleaned + balanced datasets
-│   ├── *_parsed.csv
-│   ├── *_balanced_oversample.csv
-│   ├── *_balanced_undersample.csv
-│   ├── english_hope_synthetic_10000.csv
-│   ├── tamil_hope_synthetic_cm_10000.csv
-│   └── malayalam_hope_synthetic_cm_10000.csv
-│
-├── baselineModels/           # TF-IDF + Logistic Regression training code
-│   ├── trainBaseline_english.py
-│   ├── trainBaseline_tamil.py
-│   ├── trainBaseline_malayalam.py
-│   └── *.pkl   (trained baseline models)
-│
-├── xlmr_training/            # XLM-R preprocessing + tokenized datasets
-│   ├── preprocessingForXLMR.py
-│   ├── english_xlmr_train.csv
-│   ├── tamil_xlmr_train.csv
-│   ├── malayalam_xlmr_train.csv
-│   └── tokenized datasets (HF format)
-│
-├── tests/                    # Test scripts to check predictions
-│   ├── test_english.py
-│   ├── test_tamil.py
-│   └── test_malayalam.py
-│
-└── README.md
 🔧 1. Installation
 
 Install all required packages:
