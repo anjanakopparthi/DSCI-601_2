@@ -16,11 +16,13 @@ This repository implements a complete multilingual hope-speech detection system 
 
 This work is part of an applied data-science research project on hope speech detection in low-resource and code-mixed environments.
 
-🔧 1. Installation
+## 🔧 1. Installation
 
 Install all required packages:
 
+```bash
 pip install -r requirements.txt
+
 
 
 Key dependencies:
