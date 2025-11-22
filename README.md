@@ -16,43 +16,30 @@ This repository implements a complete multilingual hope-speech detection system 
 
 This work is part of an applied data-science research project on hope speech detection in low-resource and code-mixed environments.
 
-🔧 1. Installation
+### 🔧 1. Installation
 
-Install all required packages:
+### Key dependencies
 
-pip install -r requirements.txt
+- pandas
+- scikit-learn
+- joblib
+- transformers
+- datasets
+- torch
 
-Key dependencies
-
-pandas
-
-scikit-learn
-
-joblib
-
-transformers
-
-datasets
-
-torch
-
-🧹 2. Preprocessing Pipeline
+### 🧹 2. Preprocessing Pipeline
 
 The raw dataset included three languages:
 
-English
+- English
+- Malayalam
+- Tamil
 
-Malayalam
+### Labels
 
-Tamil
-
-Labels
-
-0 — Non-Hope
-
-1 — Hope
-
-2 — Not-in-Language
+- 0 — Non-Hope
+- 1 — Hope
+- 2 — Not-in-Language
 
 ✔ What the preprocessing scripts do
 a. Basic cleaning
