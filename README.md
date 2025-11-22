@@ -2,16 +2,17 @@ Multilingual Hope Speech Detection (English • Tamil • Malayalam)
 
 This repository implements a complete multilingual hope-speech detection system for English, Tamil, and Malayalam, supporting native script, romanized text, and code-mixed comments.
 
-The project includes:
+### ✔️ Project Features
 
-✔️ Raw dataset ingestion
-✔️ Preprocessing & cleaning
-✔️ Synthetic dataset generation (10K/sample language)
-✔️ Script & variant tagging (native / romanized / mixed)
-✔️ Tokenization for multilingual transformers (XLM-R)
-✔️ Baseline TF-IDF + Logistic Regression models
-✔️ Saved inference-ready .pkl models
-✔️ Test scripts to verify predictions
+- Raw dataset ingestion  
+- Preprocessing & cleaning  
+- Synthetic dataset generation (10K/sample language)  
+- Script & variant tagging (native / romanized / mixed)  
+- Tokenization for multilingual transformers (XLM-R)  
+- Baseline TF-IDF + Logistic Regression models  
+- Saved inference-ready `.pkl` models  
+- Test scripts to verify predictions  
+
 
 This work is part of an applied data-science research project on hope speech detection in low-resource and code-mixed environments.
 
