@@ -1,0 +1,1 @@
+$ python fetch_comments.py --video_id dQw4w9WgXcQ
