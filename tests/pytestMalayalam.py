@@ -1,19 +1,34 @@
-def test_malayalam_hope_prediction(malayalam_model):
-    text = "എനിക്ക് ഇപ്പോഴും പ്രതീക്ഷയുണ്ട്"
-    pred = malayalam_model.predict([text])[0]
-    assert pred == 1, "Expected Hope prediction"
+import sys, os
 
-def test_malayalam_negation(malayalam_model):
-    text = "എനിക്ക് ഒരു പ്രതീക്ഷയും ഇല്ല"
-    pred = malayalam_model.predict([text])[0]
-    assert pred == 0, "Expected Non-Hope due to negation"
+# ---------------------------------------------------------
+# Add training/ folder to Python path
+# ---------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TRAINING_DIR = os.path.join(BASE_DIR, "training")
+sys.path.append(TRAINING_DIR)
 
-def test_malayalam_toxic_positivity(malayalam_model):
-    text = "സാധാരണ ചിരിച്ചുകൊണ്ടിരിക്ക്"
-    pred = malayalam_model.predict([text])[0]
-    assert pred == 0, "Expected Non-Hope for toxic positivity"
+from trainBaseline_malayalam import predict_with_rules_malayalam
 
-def test_malayalam_script_handling(malayalam_model):
-    text = "പ്രതീക്ഷ🙂"
-    pred = malayalam_model.predict([text])[0]
-    assert pred in [0,1], "Emoji + script mixing should work"
+
+def test_malayalam_hope_prediction():
+    text = ["എനിക്ക് ഇപ്പോഴും പ്രതീക്ഷയുണ്ട്"]   # "I still have hope"
+    base_preds, final = predict_with_rules_malayalam(text)  # ← FIXED: capture both return values
+    assert final[0] == 1, "Expected Hope prediction"
+
+
+def test_malayalam_negation():
+    text = ["എനിക്ക് ഒരു പ്രതീക്ഷയും ഇല്ല"]   # "I have no hope"
+    base_preds, final = predict_with_rules_malayalam(text)  # ← FIXED: capture both return values
+    assert final[0] == 0, "Expected Non-Hope due to negation"
+
+
+def test_malayalam_toxic_positivity():
+    text = ["സാധാരണ ചിരിച്ചുകൊണ്ടിരിക്ക്"]   # "Just keep smiling"
+    base_preds, final = predict_with_rules_malayalam(text)  # ← FIXED: capture both return values
+    assert final[0] == 0, "Expected Non-Hope for toxic positivity"
+
+
+def test_malayalam_script_handling():
+    text = ["പ്രതീക്ഷ🙂"]
+    base_preds, final = predict_with_rules_malayalam(text)  # ← FIXED: capture both return values
+    assert final[0] in [0, 1], "Emoji + script mixing should work"
