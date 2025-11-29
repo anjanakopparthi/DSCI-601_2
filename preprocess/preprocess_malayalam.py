@@ -1,13 +1,23 @@
 import pandas as pd
 import re
-import os
+from pathlib import Path
 
 # ---------------------------------------------------
-# Configuration ( your Malayalam dataset path)
+# Configuration - Using relative paths
 # ---------------------------------------------------
-input_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\malayalam_dev.csv"
-lang = "malayalam"   
+base_dir = Path.cwd()  # Current directory (DSCI-601_2)
+initial_data_dir = base_dir / "initial_data"
+processed_dir = base_dir / "processed"
 
+# Create processed directory if it doesn't exist
+processed_dir.mkdir(exist_ok=True)
+
+# Malayalam dataset paths (without "hope" in filename)
+train_path = initial_data_dir / "malayalam_train.csv"
+dev_path = initial_data_dir / "malayalam_dev.csv"
+test_path = initial_data_dir / "malayalam_test.csv"
+
+lang = "malayalam"
 
 # ---------------------------------------------------
 # TEXT CLEANING FUNCTION
@@ -38,61 +48,122 @@ def clean_text(text, lang):
 # LABEL ENCODING FUNCTION
 # ---------------------------------------------------
 def encode_label(label):
-    label = str(label).strip().lower()
-    if "hope" in label:
+    """
+    Encode labels to numeric:
+    - Hope_speech -> 1
+    - Non_hope_speech -> 0
+    - not-Malayalam -> 2
+    """
+    label = str(label).strip()
+    
+    label_map = {
+        "Hope_speech": 1,
+        "Non_hope_speech": 0,
+        "not-Malayalam": 2,
+    }
+    
+    # Try exact match first
+    if label in label_map:
+        return label_map[label]
+    
+    # Fallback: check if "hope" is in the label (case-insensitive)
+    if "hope" in label.lower():
         return 1
     else:
         return 0
 
 
 # ---------------------------------------------------
-# MAIN FUNCTION
+# HELPER: Parse semicolon-delimited files
 # ---------------------------------------------------
-def preprocess_file(input_path, lang):
-    print(f"\n Processing: {input_path} ({lang})")
+def split_text_label(s: str):
+    """
+    Input example: 'text content;Hope_speech;'
+    Output: text='text content', label_str='Hope_speech'
+    """
+    parts = str(s).split(';')
+    # Remove empty tokens
+    tokens = [p for p in parts if p != ""]
+    if len(tokens) == 0:
+        return "", None
+    if len(tokens) == 1:
+        # Only text, no label
+        return tokens[0], None
+    label_str = tokens[-1]
+    text = ';'.join(tokens[:-1])
+    return text, label_str
 
-    # Read CSV (auto detect delimiter)
-    df = pd.read_csv(input_path)
-    print("Original shape:", df.shape)
 
-    # Identify possible text and label columns
-    text_col = None
-    label_col = None
-    for col in df.columns:
-        if "text" in col.lower():
-            text_col = col
-        if "label" in col.lower() or "hope" in col.lower():
-            label_col = col
+def parse_raw_file(path: Path):
+    """Parse semicolon-delimited single-column CSV"""
+    raw = pd.read_csv(path, header=None, names=["raw"])
+    texts, labels = [], []
+    for s in raw["raw"]:
+        t, lab = split_text_label(s)
+        texts.append(t)
+        labels.append(lab)
+    df = pd.DataFrame({"text": texts, "label_str": labels})
+    return df
 
-    # Fallbacks
-    if not text_col:
-        text_col = df.columns[0]
-    if not label_col:
-        label_col = df.columns[-1]
 
-    print(f"Detected columns — text: {text_col}, label: {label_col}")
+# ---------------------------------------------------
+# MAIN PREPROCESSING FUNCTION
+# ---------------------------------------------------
+def preprocess_file(input_path, lang, output_path):
+    print(f"\n📁 Processing: {input_path.name} ({lang})")
 
-    # Clean text and encode label
-    df["text"] = df[text_col].apply(lambda x: clean_text(x, lang))
-    df["label"] = df[label_col].apply(encode_label)
+    # Parse the file (handles semicolon-delimited format)
+    df = parse_raw_file(input_path)
+    print(f"Original shape: {df.shape}")
+    print(f"Label distribution (raw):\n{df['label_str'].value_counts(dropna=False)}")
 
-    # Drop empty rows
+    # Clean text
+    df["text"] = df["text"].apply(lambda x: clean_text(x, lang))
+    
+    # Encode labels
+    df["label"] = df["label_str"].apply(encode_label)
+
+    # Drop rows with empty text
     df = df[df["text"].str.strip().astype(bool)]
 
-    # Save processed file
-    out_dir = os.path.join(os.path.dirname(input_path), "processed")
-    os.makedirs(out_dir, exist_ok=True)
-    out_path = os.path.join(out_dir, os.path.basename(input_path))
+    # Drop rows with missing labels
+    df = df.dropna(subset=["label"])
 
-    df[["text", "label"]].to_csv(out_path, index=False, encoding="utf-8")
-    print(f" Saved cleaned data to: {out_path}")
-    print("Sample:\n", df.head(5).to_string(index=False))
+    print(f"Shape after cleaning: {df.shape}")
+    print(f"Label distribution (numeric):\n{df['label'].value_counts()}")
+
+    # Save processed file
+    df[["text", "label"]].to_csv(output_path, index=False, encoding="utf-8")
+    print(f"✓ Saved to: {output_path}")
+    print(f"\nSample (first 3 rows):")
+    print(df[["text", "label"]].head(3).to_string(index=False))
 
     return df
 
 
 # ---------------------------------------------------
-# Run preprocessing
+# Run preprocessing on all splits
 # ---------------------------------------------------
 if __name__ == "__main__":
-    preprocess_file(input_path, lang)
+    print("=" * 60)
+    print("Malayalam Hope Speech Dataset - Preprocessing")
+    print("=" * 60)
+
+    # Process train, dev, test
+    train_out = processed_dir / "malayalam_hope_train_processed.csv"
+    dev_out = processed_dir / "malayalam_hope_dev_processed.csv"
+    test_out = processed_dir / "malayalam_hope_test_processed.csv"
+
+    train_df = preprocess_file(train_path, lang, train_out)
+    dev_df = preprocess_file(dev_path, lang, dev_out)
+    test_df = preprocess_file(test_path, lang, test_out)
+
+    print("\n" + "=" * 60)
+    print("✓ Malayalam preprocessing complete!")
+    print("=" * 60)
+    
+    # Summary
+    print(f"\nFinal statistics:")
+    print(f"  Train: {len(train_df)} samples")
+    print(f"  Dev:   {len(dev_df)} samples")
+    print(f"  Test:  {len(test_df)} samples")

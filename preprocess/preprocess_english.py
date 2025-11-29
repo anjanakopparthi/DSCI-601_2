@@ -7,12 +7,18 @@ from sklearn.utils import resample
 #    These are the ORIGINAL files with "text;label;" in one column
 # ============================================================
 
-base_dir = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed"
-base = Path(base_dir)
+# FIXED: Updated paths to point to initial_data folder
+base_dir = Path.cwd()  # Current directory (DSCI-601_2)
+initial_data_dir = base_dir / "initial_data"
+processed_dir = base_dir / "processed"
 
-train_path = base / "english_hope_train.csv"
-dev_path   = base / "english_hope_dev.csv"
-test_path  = base / "english_hope_test.csv"
+# Create processed directory if it doesn't exist
+processed_dir.mkdir(exist_ok=True)
+
+# Read from initial_data
+train_path = initial_data_dir / "english_hope_train.csv"
+dev_path   = initial_data_dir / "english_hope_dev.csv"
+test_path  = initial_data_dir / "english_hope_test.csv"
 
 # ============================================================
 # 2. Helper: split "text;label;" into text + label_str
@@ -55,6 +61,8 @@ def parse_raw_file(path: Path):
 # 3. Parse train / dev / test
 # ============================================================
 
+print(f"Reading from:\n  {train_path}\n  {dev_path}\n  {test_path}\n")
+
 train_df = parse_raw_file(train_path)
 dev_df   = parse_raw_file(dev_path)
 test_df  = parse_raw_file(test_path)
@@ -84,18 +92,18 @@ print(train_df["label"].value_counts(dropna=False))
 #    Columns: text, label_str, label
 # ============================================================
 
-train_parsed_path = base / "english_hope_train_parsed.csv"
-dev_parsed_path   = base / "english_hope_dev_parsed.csv"
-test_parsed_path  = base / "english_hope_test_parsed.csv"
+train_parsed_path = processed_dir / "english_hope_train_parsed.csv"
+dev_parsed_path   = processed_dir / "english_hope_dev_parsed.csv"
+test_parsed_path  = processed_dir / "english_hope_test_parsed.csv"
 
 train_df.to_csv(train_parsed_path, index=False, encoding="utf-8")
 dev_df.to_csv(dev_parsed_path, index=False, encoding="utf-8")
 test_df.to_csv(test_parsed_path, index=False, encoding="utf-8")
 
-print("\n Saved parsed files:")
-print("  Train parsed:", train_parsed_path)
-print("  Dev parsed:  ", dev_parsed_path)
-print("  Test parsed: ", test_parsed_path)
+print("\n✓ Saved parsed files:")
+print(f"  Train parsed: {train_parsed_path}")
+print(f"  Dev parsed:   {dev_parsed_path}")
+print(f"  Test parsed:  {test_parsed_path}")
 
 # ============================================================
 # 6. Create UNDERSAMPLED and OVERSAMPLED train sets
@@ -115,44 +123,51 @@ n_min = len(minr)
 print(f"\nMajority (0=Non_hope_speech): {n_maj}")
 print(f"Minority (1=Hope_speech):      {n_min}")
 
-# ---------- A) UNDERSAMPLE majority to minority size ----------
-maj_under = resample(
-    maj,
-    replace=False,
-    n_samples=n_min,
-    random_state=42
-)
-train_balanced_under = pd.concat([maj_under, minr], axis=0) \
-                         .sample(frac=1.0, random_state=42) \
-                         .reset_index(drop=True)
+# Check if we have data to balance
+if n_maj == 0 or n_min == 0:
+    print("\n⚠️ WARNING: Cannot create balanced datasets - one class has 0 samples!")
+    print("Please check your input data files.")
+else:
+    # ---------- A) UNDERSAMPLE majority to minority size ----------
+    maj_under = resample(
+        maj,
+        replace=False,
+        n_samples=n_min,
+        random_state=42
+    )
+    train_balanced_under = pd.concat([maj_under, minr], axis=0) \
+                             .sample(frac=1.0, random_state=42) \
+                             .reset_index(drop=True)
 
-print("\nUndersampled TRAIN counts:")
-print(train_balanced_under["label"].value_counts())
+    print("\nUndersampled TRAIN counts:")
+    print(train_balanced_under["label"].value_counts())
 
-# ---------- B) OVERSAMPLE minority to majority size ----------
-min_over = resample(
-    minr,
-    replace=True,
-    n_samples=n_maj,
-    random_state=42
-)
-train_balanced_over = pd.concat([maj, min_over], axis=0) \
-                        .sample(frac=1.0, random_state=42) \
-                        .reset_index(drop=True)
+    # ---------- B) OVERSAMPLE minority to majority size ----------
+    min_over = resample(
+        minr,
+        replace=True,
+        n_samples=n_maj,
+        random_state=42
+    )
+    train_balanced_over = pd.concat([maj, min_over], axis=0) \
+                            .sample(frac=1.0, random_state=42) \
+                            .reset_index(drop=True)
 
-print("\nOversampled TRAIN counts:")
-print(train_balanced_over["label"].value_counts())
+    print("\nOversampled TRAIN counts:")
+    print(train_balanced_over["label"].value_counts())
 
-# ============================================================
-# 7. Save balanced train sets
-# ============================================================
+    # ============================================================
+    # 7. Save balanced train sets
+    # ============================================================
 
-under_path = base / "english_hope_train_balanced_undersample.csv"
-over_path  = base / "english_hope_train_balanced_oversample.csv"
+    under_path = processed_dir / "english_hope_train_balanced_undersample.csv"
+    over_path  = processed_dir / "english_hope_train_balanced_oversample.csv"
 
-train_balanced_under.to_csv(under_path, index=False, encoding="utf-8")
-train_balanced_over.to_csv(over_path, index=False, encoding="utf-8")
+    train_balanced_under.to_csv(under_path, index=False, encoding="utf-8")
+    train_balanced_over.to_csv(over_path, index=False, encoding="utf-8")
 
-print("\n Saved balanced train files:")
-print("  Undersampled:", under_path)
-print("  Oversampled: ", over_path)
+    print("\n✓ Saved balanced train files:")
+    print(f"  Undersampled: {under_path}")
+    print(f"  Oversampled:  {over_path}")
+
+print("\n✓ Preprocessing complete!")

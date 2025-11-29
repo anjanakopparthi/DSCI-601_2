@@ -6,18 +6,24 @@ from pathlib import Path
 #    (single-column files with "text;label;" format)
 # ============================================================
 
-base = Path(r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed")
+# FIXED: Updated paths to use initial_data and processed directories
+base_dir = Path.cwd()  # Current directory (DSCI-601_2)
+initial_data_dir = base_dir / "initial_data"
+processed_dir = base_dir / "processed"
 
-train_path = base / "tamil_hope_first_train.csv"
-dev_path   = base / "tamil_hope_first_dev.csv"
-test_path  = base / "tamil_hope_first_test.csv"
+# Create processed directory if it doesn't exist
+processed_dir.mkdir(exist_ok=True)
+
+# Read from initial_data
+train_path = initial_data_dir / "tamil_hope_first_train.csv"
+dev_path   = initial_data_dir / "tamil_hope_first_dev.csv"
+test_path  = initial_data_dir / "tamil_hope_first_test.csv"
 
 # ============================================================
 # 2. Helper: split "text;label;" into text + label_str
 # ============================================================
 
 def split_text_label(s: str):
-
     parts = str(s).split(';')
     # Remove empty tokens (because line ends with a ';')
     tokens = [p for p in parts if p != ""]
@@ -44,6 +50,8 @@ def parse_raw_file(path: Path):
 # 3. Parse train / dev / test
 # ============================================================
 
+print(f"Reading from:\n  {train_path}\n  {dev_path}\n  {test_path}\n")
+
 train_df = parse_raw_file(train_path)
 dev_df   = parse_raw_file(dev_path)
 test_df  = parse_raw_file(test_path)
@@ -64,6 +72,9 @@ label_map = {
 
 for df in (train_df, dev_df, test_df):
     df["label"] = df["label_str"].map(label_map)
+
+print("\nNumeric label counts (TRAIN - before correction):")
+print(train_df["label"].value_counts(dropna=False))
 
 # ============================================================
 # 5. Apply *relabeling rule* to TRAIN only
@@ -100,18 +111,28 @@ train_df = train_df.drop(columns=["has_negation", "has_hope_word"])
 # 6. Save processed files
 # ============================================================
 
-train_out = base / "tamil_hope_first_train_corrected.csv"
-dev_out   = base / "tamil_hope_first_dev_parsed.csv"
-test_out  = base / "tamil_hope_first_test_parsed.csv"
+train_out = processed_dir / "tamil_hope_first_train_corrected.csv"
+dev_out   = processed_dir / "tamil_hope_first_dev_parsed.csv"
+test_out  = processed_dir / "tamil_hope_first_test_parsed.csv"
 
 train_df.to_csv(train_out, index=False, encoding="utf-8")
 dev_df.to_csv(dev_out, index=False, encoding="utf-8")
 test_df.to_csv(test_out, index=False, encoding="utf-8")
 
-print("\n Saved:")
-print("  Train (corrected):", train_out)
-print("  Dev (parsed):     ", dev_out)
-print("  Test (parsed):    ", test_out)
+print("\n✓ Saved:")
+print(f"  Train (corrected): {train_out}")
+print(f"  Dev (parsed):      {dev_out}")
+print(f"  Test (parsed):     {test_out}")
 
-print("\nFinal train label counts (numeric):")
-print(train_df["label"].value_counts())
+print("\nFinal train label counts (numeric - after correction):")
+print(train_df["label"].value_counts(dropna=False))
+
+# Show class distribution
+if not train_df["label"].isna().all():
+    print("\nClass distribution:")
+    for label_val, label_name in [(0, "Non_hope_speech"), (1, "Hope_speech"), (2, "not-Tamil")]:
+        count = (train_df["label"] == label_val).sum()
+        if count > 0:
+            print(f"  {label_name} ({label_val}): {count}")
+
+print("\n✓ Tamil preprocessing complete!")

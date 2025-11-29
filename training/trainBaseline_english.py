@@ -1,6 +1,7 @@
 import os
 import joblib
 import pandas as pd
+from pathlib import Path
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -9,92 +10,104 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 
 # ============================================================
-# 1. Paths to your ENGLISH processed CSVs
+# 1. Paths
 # ============================================================
 
+base_dir = Path.cwd()
+processed_dir = base_dir / "processed"
+models_dir = base_dir / "models"
+models_dir.mkdir(exist_ok=True)
 
-train_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\english_hope_train_balanced_undersample.csv"
+train_path = processed_dir / "english_hope_train_balanced_undersample.csv"
+dev_path   = processed_dir / "english_hope_dev_parsed.csv"
+test_path  = processed_dir / "english_hope_test_parsed.csv"
 
-# B) Balanced (oversampled) train
-# train_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\english_hope_train_balanced_oversample.csv"
-
-# C) Original parsed (imbalanced) train
-# train_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\english_hope_train_parsed.csv"
-
-dev_path  = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\english_hope_dev_parsed.csv"
-test_path = r"C:\Users\sai pavan preetham a\Desktop\RIT_Anjana\dsci601\project\processed\english_hope_test_parsed.csv"
+print(f"Loading data:")
+print(f"  Train: {train_path}")
+print(f"  Dev:   {dev_path}")
+print(f"  Test:  {test_path}\n")
 
 # ============================================================
 # 2. Load data
-#    Files should have: text, label_str, label
-#    label: 0 = Non_hope_speech, 1 = Hope_speech, 2 = not-English
 # ============================================================
 
 train_df = pd.read_csv(train_path)
+print(f"Train loaded: {len(train_df)} rows")
 
-dev_df = pd.read_csv(dev_path) if os.path.exists(dev_path) else None
-test_df = pd.read_csv(test_path) if os.path.exists(test_path) else None
-
-# ============================================================
-# 3. Keep ONLY English hope vs non-hope (drop not-English)
-# ============================================================
-
-train_df = train_df[train_df["label"].isin([0, 1])].copy()
+dev_df = pd.read_csv(dev_path) if dev_path.exists() else None
+test_df = pd.read_csv(test_path) if test_path.exists() else None
 
 if dev_df is not None:
-    dev_df = dev_df[dev_df["label"].isin([0, 1])].copy()
-
+    print(f"Dev loaded: {len(dev_df)} rows")
 if test_df is not None:
-    test_df = test_df[test_df["label"].isin([0, 1])].copy()
+    print(f"Test loaded: {len(test_df)} rows")
 
 # ============================================================
-# 4. Handle missing values
+# 3. Keep ONLY labels 0/1 and clean text
 # ============================================================
 
-train_df["text"] = train_df["text"].fillna("")
+def clean_df(df):
+    df = df[df["label"].isin([0, 1])].copy()
+    df["text"] = df["text"].fillna("").astype(str)
+    df = df[df["text"].str.strip() != ""]
+    return df
 
+train_df = clean_df(train_df)
 if dev_df is not None:
-    dev_df["text"] = dev_df["text"].fillna("")
-
+    dev_df = clean_df(dev_df)
 if test_df is not None:
-    test_df["text"] = test_df["text"].fillna("")
+    test_df = clean_df(test_df)
+
+print(f"Train after cleaning: {len(train_df)} rows")
+if dev_df is not None:
+    print(f"Dev after cleaning:   {len(dev_df)} rows")
+if test_df is not None:
+    print(f"Test after cleaning:  {len(test_df)} rows")
 
 # ============================================================
-# 5. Train–validation split
+# 4. Validation split logic (fixed)
 # ============================================================
 
 X_train = train_df["text"]
 y_train = train_df["label"]
 
-if dev_df is not None:
+if dev_df is not None and len(dev_df) > 5:
+    print("\nUsing provided dev set.")
     X_dev = dev_df["text"]
     y_dev = dev_df["label"]
 else:
-    X_train, X_dev, y_train, y_dev = train_test_split(
-        X_train,
-        y_train,
-        test_size=0.2,
-        random_state=42,
-        stratify=y_train,
-    )
+    print("\nDev set too small → Using split from train")
+    try:
+        X_train, X_dev, y_train, y_dev = train_test_split(
+            X_train, y_train,
+            test_size=0.2,
+            random_state=42,
+            stratify=y_train
+        )
+    except ValueError:
+        print("⚠ Stratified split failed → using non-stratified split")
+        X_train, X_dev, y_train, y_dev = train_test_split(
+            X_train, y_train,
+            test_size=0.2,
+            random_state=42
+        )
 
-print("Training class distribution:")
-print(y_train.value_counts())
-print(f"\nClass 0 (Non_hope_speech): {(y_train == 0).sum()} samples")
-print(f"Class 1 (Hope_speech): {(y_train == 1).sum()} samples")
+print("\nFinal dataset sizes:")
+print(f"Train: {len(X_train)}")
+print(f"Dev:   {len(X_dev)}\n")
 
 # ============================================================
-# 6. TF-IDF + Logistic Regression pipeline
+# 6. Model pipeline
 # ============================================================
 
 model = Pipeline([
     ('tfidf', TfidfVectorizer(
         max_features=5000,
-        ngram_range=(1, 3)   # unigrams + bigrams + trigrams
+        ngram_range=(1, 3)
     )),
     ('clf', LogisticRegression(
         max_iter=500,
-        class_weight='balanced', 
+        class_weight='balanced',
         n_jobs=-1
     ))
 ])
@@ -103,27 +116,30 @@ model = Pipeline([
 # 7. Train
 # ============================================================
 
-print("\nTraining model...")
+print("Training model...")
 model.fit(X_train, y_train)
+print("✓ Model trained!")
 
 # ============================================================
-# 8. Evaluate on validation
+# 8. Validation
 # ============================================================
 
-print("\nValidation Results:")
-y_pred = model.predict(X_dev)
-print(classification_report(y_dev, y_pred, digits=3))
-print("Validation Accuracy:", accuracy_score(y_dev, y_pred))
+if len(X_dev) > 0:
+    print("\nValidation Results:")
+    y_pred = model.predict(X_dev)
+    print(classification_report(y_dev, y_pred, digits=3))
+    print("Accuracy:", accuracy_score(y_dev, y_pred))
+else:
+    print("\n⚠ No validation data")
 
 # ============================================================
-# 9. Evaluate on test set 
+# 9. Test
 # ============================================================
 
-if test_df is not None:
+if test_df is not None and len(test_df) > 0:
+    print("\nTest Results:")
     X_test = test_df["text"]
     y_test = test_df["label"]
-
-    print("\nTest Results:")
     y_test_pred = model.predict(X_test)
     print(classification_report(y_test, y_test_pred, digits=3))
     print("Test Accuracy:", accuracy_score(y_test, y_test_pred))
@@ -132,77 +148,51 @@ if test_df is not None:
 # 10. Save model
 # ============================================================
 
-model_path = "hope_english_model.pkl"
+model_path = models_dir / "hope_english_model.pkl"
 joblib.dump(model, model_path)
-print(f"\n Model saved as {model_path}")
+print(f"\n✓ Saved model at {model_path}")
 
 # ============================================================
-# 11. Load model again (like you do in testing scripts)
+# 11. Reload model
 # ============================================================
 
 model = joblib.load(model_path)
-print("\n Model reloaded for inference")
+print("✓ Reloaded model")
 
 # ============================================================
-# 12. Wrapper with rules around the model
-#     - Negative hope expressions → force label 0
-#     - Strong positive hope expressions → force label 1
+# 12. Rule-based wrapper
 # ============================================================
 
-# Negative-hope patterns → should be class 0 (Non_hope_speech)
 NEG_PATTERNS = [
-    "no hope",
-    "not much hope",
-    "little hope",
-    "without hope",
-    "hopeless",
-    "don't have hope",
-    "do not have hope",
-    "not hope",          # explicitly negative
+    "no hope", "not much hope", "little hope", "without hope",
+    "hopeless", "don't have hope", "do not have hope", "not hope"
 ]
 
-# Strong positive hope patterns → should be class 1 (Hope_speech)
 POS_PATTERNS = [
-    "there is hope",
-    "i have hope",
-    "we have hope",
-    "never lose hope",   # explicitly positive
-    "don't lose hope",
-    "do not lose hope",
-    "never give up hope",
-    "keep hope alive",
-    "stay hopeful",
-    "things will be good",
-    "better days are coming",
-    "have hope",
+    "there is hope", "i have hope", "we have hope", "never lose hope",
+    "don't lose hope", "do not lose hope", "never give up hope",
+    "keep hope alive", "stay hopeful", "things will be good",
+    "better days are coming", "have hope"
 ]
 
-def contains_any_substring(text: str, patterns):
-    t = text.lower()
-    return any(p in t for p in patterns)
+def contains_any(text, patterns):
+    text = text.lower()
+    return any(p in text for p in patterns)
 
 def predict_with_rules_english(texts):
-    """
-    texts: list[str]
-    returns: numpy array of final labels (0/1)
-    """
     base_preds = model.predict(texts)
     fixed = base_preds.copy()
 
     for i, txt in enumerate(texts):
-        low = txt.lower()
-
-        # 1) Explicit positive-hope phrases → force Hope_speech (1)
-        if contains_any_substring(low, POS_PATTERNS):
+        if contains_any(txt, POS_PATTERNS):
             fixed[i] = 1
-            print(f" Positive override → Hope_speech (1): {txt}")
             continue
-
-        # 2) Explicit negative-hope phrases → force Non_hope_speech (0)
-        if contains_any_substring(low, NEG_PATTERNS):
+        if contains_any(txt, NEG_PATTERNS):
             fixed[i] = 0
-            print(f" Negative override → Non_hope_speech (0): {txt}")
             continue
 
     return base_preds, fixed
 
+print("\n" + "="*60)
+print("✓ Training complete (fixed + safe version)")
+print("="*60)
