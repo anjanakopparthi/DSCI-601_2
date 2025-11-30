@@ -122,7 +122,7 @@ Prediction: Non-Hope (0)
 ### Pytest
 - Install libraries in 'Requirements.txt' and run the pytests using the following command
 - python ./tests/conftest.py
-- python -m pytest tests/otherTests.py -v
+- python -m pytest tests/otherTests.py -vv
 - python -m pytest tests/pytestMalayalam.py -vv
 - python -m pytest tests/pytestTamil.py -vv
 - python -m pytest tests/pytestEnglish.py -vv
