@@ -1,0 +1,44 @@
+# =======================
+#  PROJECT CONFIGURATION
+# =======================
+
+paths:
+  data_raw: "initial_data/"
+  data_processed: "processed/"
+  models: "models/"
+  metrics: "metrics/"
+  synthetic: "synthetic_data/"
+  xlmr_tokenized: "xlmr_tokenized/"
+  training_output: "training/"
+
+files:
+  english:
+    train: "english_hope_train.csv"
+    dev: "english_hope_dev.csv"
+    test: "english_hope_test.csv"
+    model: "hope_english_model.pkl"
+  
+  malayalam:
+    train: "malayalam_train.csv"
+    dev: "malayalam_dev.csv"
+    test: "malayalam_test.csv"
+    model: "hope_malayalam_model.pkl"
+  
+  tamil:
+    train: "tamil_hope_first_train_corrected.csv"
+    dev: "tamil_hope_first_dev_parsed.csv"
+    test: "tamil_hope_first_test_parsed.csv"
+    model: "hope_tamil_model.pkl"
+
+xlmr:
+  model_name: "xlm-roberta-base"
+  max_length: 128
+  batch_size: 16
+
+training:
+  test_size: 0.1
+  random_state: 42
+  oversample: false
+  undersample: false
+  tfidf_max_features: 20000
+

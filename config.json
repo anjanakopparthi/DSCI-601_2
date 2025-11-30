@@ -1,0 +1,142 @@
+{
+  "base_dir": ".",
+  "initial_data_dir": "initial_data",
+  "processed_dir": "processed",
+  "models_dir": "models",
+  
+  "training": {
+    "balance_method": "undersample",
+    "tfidf_params": {
+      "max_features": 5000,
+      "ngram_range": [1, 3]
+    },
+    "lr_params": {
+      "max_iter": 500,
+      "class_weight": "balanced",
+      "n_jobs": -1
+    }
+  },
+  
+  "languages": {
+    "english": {
+      "train_file": "english_hope_train.csv",
+      "dev_file": "english_hope_dev.csv",
+      "test_file": "english_hope_test.csv",
+      "single_column_semicolon": true,
+      "label_map": {
+        "Non_hope_speech": 0,
+        "Hope_speech": 1,
+        "not-English": 2
+      },
+      "not_lang_label": "not-English",
+      "negation": {
+        "enabled": false
+      },
+      "rule_patterns": {
+        "positive": [
+          "there is hope",
+          "i have hope",
+          "we have hope",
+          "never lose hope",
+          "don't lose hope",
+          "do not lose hope",
+          "never give up hope",
+          "keep hope alive",
+          "stay hopeful",
+          "things will be good",
+          "better days are coming",
+          "have hope"
+        ],
+        "negative": [
+          "no hope",
+          "not much hope",
+          "little hope",
+          "without hope",
+          "hopeless",
+          "don't have hope",
+          "do not have hope",
+          "not hope"
+        ]
+      }
+    },
+    
+    "tamil": {
+      "train_file": "tamil_hope_first_train.csv",
+      "dev_file": "tamil_hope_first_dev.csv",
+      "test_file": "tamil_hope_first_test.csv",
+      "single_column_semicolon": true,
+      "label_map": {
+        "Non_hope_speech": 0,
+        "Hope_speech": 1,
+        "not-Tamil": 2
+      },
+      "not_lang_label": "not-Tamil",
+      "negation": {
+        "enabled": true,
+        "hope_word": "நம்பிக்கை",
+        "patterns": ["இல்லை", "இல்ல", "கிடையாது", "மாட்டேன்"],
+        "hope_label_str": "Hope_speech",
+        "non_hope_label_str": "Non_hope_speech"
+      },
+      "rule_patterns": {
+        "positive": [
+          "நம்பிக்கை இருக்கிறது",
+          "நேற்று விட இன்று நல்லது",
+          "வெற்றி",
+          "நல்ல நாட்கள் வரும்",
+          "நம்பிக்கை வையுங்கள்"
+        ],
+        "negative": [
+          "நம்பிக்கை இல்லை",
+          "நம்பிக்கையில்லை",
+          "ஆசை இல்லை",
+          "முடியாது",
+          "நஷ்டம்",
+          "தோல்வி"
+        ]
+      }
+    },
+    
+    "malayalam": {
+      "train_file": "malayalam_train.csv",
+      "dev_file": "malayalam_dev.csv",
+      "test_file": "malayalam_test.csv",
+      "single_column_semicolon": true,
+      "label_map": {
+        "Hope_speech": 1,
+        "Non_hope_speech": 0,
+        "not-Malayalam": 2
+      },
+      "not_lang_label": "not-Malayalam",
+      "negation": {
+        "enabled": false
+      },
+      "rule_patterns": {
+        "positive": [
+          "പ്രതീക്ഷയുണ്ട്",
+          "പ്രതീക്ഷ ഉണ്ട്",
+          "പ്രതീക്ഷയുള്ള",
+          "ആശയുണ്ട്",
+          "ആശാ ഉണ്ട്",
+          "വിജയിക്കും",
+          "നല്ല ദിവസം",
+          "നാം വിജയിക്കും",
+          "ഞങ്ങൾ വിജയിക്കും",
+          "വിശ്വസിക്കുന്നു"
+        ],
+        "negative": [
+          "പ്രതീക്ഷയില്ല",
+          "പ്രതീക്ഷ ഇല്ല",
+          "പ്രതീക്ഷയുമില്ല",
+          "ആശയില്ല",
+          "ഇല്ല",
+          "സാധ്യമല്ല",
+          "മുട്ടി",
+          "നഷ്ടപ്പെട്ട്",
+          "കിട്ടയില്ല",
+          "മാർഗ്ഗമില്ല"
+        ]
+      }
+    }
+  }
+}
