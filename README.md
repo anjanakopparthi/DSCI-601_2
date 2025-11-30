@@ -82,9 +82,9 @@ python baselineModels/trainBaseline_malayalam.py
 
 ### ✔ Output models
 
-- baselineModels/hope_english_model.pkl
-- baselineModels/hope_tamil_model.pkl
-- baselineModels/hope_malayalam_model.pkl
+- models/hope_english_model.pkl
+- models/hope_tamil_model.pkl
+- models/hope_malayalam_model.pkl
 
 
 Each .pkl contains:
@@ -118,6 +118,14 @@ Prediction: Hope Speech (1)
 
 Input: "no hope left"
 Prediction: Non-Hope (0)
+
+### Pytest
+- Install libraries in 'Requirements.txt' and run the pytests using the following command
+- python ./tests/conftest.py
+- python -m pytest tests/otherTests.py -v
+- python -m pytest tests/pytestMalayalam.py -vv
+- python -m pytest tests/pytestTamil.py -vv
+- python -m pytest tests/pytestEnglish.py -vv
 
 ### Output 
 - The English baseline model achieved an accuracy of 80.4%, with a weighted F1 score of 0.84. However, class-wise performance reveals strong asymmetry. Non-Hope speech (class 0) has very high precision (0.98), indicating that false positives are rare, but Hope speech (class 1) has extremely low precision (0.29), reflecting a high number of misclassified examples. The model overpredicts Hope due to lexical overlap and prior class imbalance in the original training distribution. These observations confirm that the baseline model is insufficient for capturing the nuance and contextual dependencies required for reliable hope speech detection. This motivates the use of transformer-based architectures such as XLM-R to handle code-mixing, negation, and subtle prosocial semantics.
