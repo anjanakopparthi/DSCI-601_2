@@ -31,11 +31,21 @@ from trainBaseline_tamil import predict_with_rules_tamil
 # ============================================
 
 texts = [
-    "எனக்கு நம்பிக்கை இருக்கிறது",
-    "நம்பிக்கை இல்லை",
-    "இது நல்ல நாள் வரும்",
-    "நம்மால் முடியாது",
-    "உற்சாகமாக இரு நண்பா"
+    "எனக்கு நம்பிக்கை இருக்கிறது"# "I have hope" or "I have confidence"
+# (enakku nambikkai irukkirthu)
+# This is HOPE SPEECH ,
+    "நம்பிக்கை இல்லை" #There is no hope" or "No hope"
+# (nambikkai illai)
+# This is NON-HOPE SPEECH ",
+    "இது நல்ல நாள் வரும்" # "Good days will come" or "Better days are coming"
+# (ithu nalla naal varum)
+# This is HOPE SPEECH ,
+    "நம்மால் முடியாது"# "We cannot do it" or "It's impossible for us"
+# (nammal mudiyathu)
+# This is NON-HOPE SPEECH,
+    "உற்சாகமாக இரு நண்பா"# "Be enthusiastic, friend" or "Stay excited, buddy"
+# (utsahamaga iru nanba)
+# This is HOPE SPEECH 
 ]
 
 baseline, final = predict_with_rules_tamil(texts)

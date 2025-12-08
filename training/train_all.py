@@ -92,7 +92,7 @@ def balance_train_data(df: pd.DataFrame, method: str = "undersample", random_sta
 
 
 # ============================================================
-# 4. Create validation split if needed
+# 4. Create validation split 
 # ============================================================
 
 def prepare_train_dev_split(
@@ -102,11 +102,7 @@ def prepare_train_dev_split(
     random_state: int = 42,
     min_dev_size: int = 5
 ):
-    """
-    Prepare train/dev split:
-    - Use provided dev set if it exists and is large enough
-    - Otherwise split from training data
-    """
+    
     X_train = train_df["text"]
     y_train = train_df["label"]
     
@@ -422,7 +418,7 @@ def main():
             )
             trained_models[lang_name] = model
         except Exception as e:
-            print(f"\n❌ Error training {lang_name}: {e}")
+            print(f"\n Error training {lang_name}: {e}")
             continue
     
     # Summary

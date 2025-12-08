@@ -1,0 +1,4 @@
+python -m pytest tests/otherTests.py -v
+python -m pytest tests/pytestMalayalam.py -vv
+python -m pytest tests/pytestTamil.py -vv
+python -m pytest tests/pytestEnglish.py -vv

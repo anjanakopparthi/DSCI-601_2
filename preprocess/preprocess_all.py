@@ -29,7 +29,6 @@ def clean_text(text: str, lang: str) -> str:
     # Remove mentions and hashtags
     text = re.sub(r"[@#]\w+", "", text)
 
-    # Remove emojis and unwanted punctuation
     # Keep word chars, whitespace, Malayalam and Tamil Unicode blocks
     text = re.sub(r"[^\w\s\u0D00-\u0D7F\u0B80-\u0BFF]", "", text)
 
