@@ -736,7 +736,7 @@ This project is licensed under the MIT License.
 
 **Anjana Kopparthi** - Lead Developer
 
-© Copyright 2024, Anjana Kopparthi.  
+© Copyright 2025, Anjana Kopparthi.  
 Built with Sphinx using a theme provided by Read the Docs.
 
 ---
@@ -746,9 +746,9 @@ Built with Sphinx using a theme provided by Read the Docs.
 If you use this code or dataset in your research, please cite:
 
 ```bibtex
-@article{kopparthi2024hope,
+@article{kopparthi2025hope,
   title={Multilingual Hope Speech Detection: A Baseline Approach},
   author={Kopparthi, Anjana},
-  year={2024}
+  year={2025}
 }
 ```
