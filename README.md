@@ -752,7 +752,3 @@ If you use this code or dataset in your research, please cite:
   year={2024}
 }
 ```
-
----
-
-**⭐ If this project helps your research, please star the repository!**
