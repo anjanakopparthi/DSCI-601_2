@@ -107,7 +107,7 @@ DSCI-601_2/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/DSCI-601_2.git
+git clone https://github.com/anjanakopparthi/DSCI-601_2.git
 cd DSCI-601_2
 ```
 
