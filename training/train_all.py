@@ -1,22 +1,52 @@
+"""
+Multilingual Hope Speech Detection - Baseline Training (v2, binary).
+
+Trains a TF-IDF + Logistic Regression baseline per language and evaluates a
+rule-enhanced variant, on the binary processed data (0 = Non-hope, 1 = Hope).
+
+Fixes over the previous version:
+    1. No undersampling. The full training set is used; class imbalance is
+       handled by LogisticRegression(class_weight="balanced"). The old script
+       both undersampled AND used balanced weights (redundant), throwing away
+       ~90% of English majority-class rows.
+    2. The rules variant is saved as a plain dict {model, pos_patterns,
+       neg_patterns} — the old version pickled a closure, which is not
+       serializable and produced corrupt files. Use load_rules_model() +
+       predict_with_rules() from this module to run it.
+    3. The rules variant is actually EVALUATED on dev and test (previously it
+       was saved but never scored).
+    4. Reports accuracy, macro F1, weighted F1, and Hope-class F1 (macro and
+       Hope F1 are the honest numbers on imbalanced data).
+    5. All metrics are saved to metrics/baseline_metrics.json for later
+       comparison against XLM-R.
+    6. random_state everywhere for reproducibility.
+
+Usage (from repo root):
+    $ python training/train_all.py
+
+Reads config.json from the current directory. Expects processed CSVs in
+`processed/`, writes models to `models/` and metrics to `metrics/`.
+"""
+
 import json
-import joblib
-import pandas as pd
 from pathlib import Path
 
+import joblib
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import (accuracy_score, classification_report,
+                             confusion_matrix, f1_score, precision_score,
+                             recall_score)
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
-from sklearn.utils import resample
 
 
 # ============================================================
-# 1. Load configuration
+# 1. Configuration
 # ============================================================
 
 def load_config(config_path: Path) -> dict:
-    """Load configuration from JSON file"""
+    """Load config.json (must exist)."""
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
     with config_path.open("r", encoding="utf-8") as f:
@@ -24,415 +54,212 @@ def load_config(config_path: Path) -> dict:
 
 
 # ============================================================
-# 2. Data cleaning and filtering
+# 2. Data loading
 # ============================================================
 
-def clean_dataframe(df: pd.DataFrame, keep_labels: list = [0, 1]) -> pd.DataFrame:
-    """
-    Clean dataframe by:
-    - Keeping only specified labels
-    - Removing empty text
-    - Converting text to string
-    """
-    df = df.copy()
-    df = df[df["label"].isin(keep_labels)]
+def load_split(processed_dir: Path, lang: str, split: str) -> pd.DataFrame:
+    """Load one processed split and sanity-check it is clean and binary."""
+    path = processed_dir / f"{lang}_{split}_processed.csv"
+    df = pd.read_csv(path)
     df["text"] = df["text"].fillna("").astype(str)
     df = df[df["text"].str.strip() != ""]
-    return df
-
-
-# ============================================================
-# 3. Balance training data
-# ============================================================
-
-def balance_train_data(df: pd.DataFrame, method: str = "undersample", random_state: int = 42) -> pd.DataFrame:
-    """
-    Balance training data using undersample or oversample
-    
-    Args:
-        df: DataFrame with 'label' column
-        method: 'undersample' or 'oversample'
-        random_state: Random seed
-    
-    Returns:
-        Balanced DataFrame
-    """
-    maj = df[df["label"] == 0]  # Non_hope_speech
-    minr = df[df["label"] == 1]  # Hope_speech
-    
-    n_maj = len(maj)
-    n_min = len(minr)
-    
-    print(f"\nOriginal distribution:")
-    print(f"  Non_hope_speech (0): {n_maj}")
-    print(f"  Hope_speech (1):     {n_min}")
-    
-    if n_maj == 0 or n_min == 0:
-        print("WARNING: Cannot balance - one class has 0 samples!")
-        return df
-    
-    if method == "undersample":
-        # Undersample majority to match minority
-        maj_sampled = resample(maj, replace=False, n_samples=n_min, random_state=random_state)
-        balanced_df = pd.concat([maj_sampled, minr])
-    elif method == "oversample":
-        # Oversample minority to match majority
-        min_sampled = resample(minr, replace=True, n_samples=n_maj, random_state=random_state)
-        balanced_df = pd.concat([maj, min_sampled])
-    else:
-        raise ValueError(f"Unknown balancing method: {method}")
-    
-    # Shuffle
-    balanced_df = balanced_df.sample(frac=1.0, random_state=random_state).reset_index(drop=True)
-    
-    print(f"\nBalanced distribution ({method}):")
-    print(balanced_df["label"].value_counts())
-    
-    return balanced_df
-
-
-# ============================================================
-# 4. Create validation split 
-# ============================================================
-
-def prepare_train_dev_split(
-    train_df: pd.DataFrame,
-    dev_df: pd.DataFrame = None,
-    test_size: float = 0.2,
-    random_state: int = 42,
-    min_dev_size: int = 5
-):
-    
-    X_train = train_df["text"]
-    y_train = train_df["label"]
-    
-    if dev_df is not None and len(dev_df) >= min_dev_size:
-        print(f"\nUsing provided dev set ({len(dev_df)} samples)")
-        X_dev = dev_df["text"]
-        y_dev = dev_df["label"]
-    else:
-        print(f"\nDev set too small or missing → splitting from train")
-        try:
-            X_train, X_dev, y_train, y_dev = train_test_split(
-                X_train, y_train,
-                test_size=test_size,
-                random_state=random_state,
-                stratify=y_train
-            )
-            print("  Using stratified split")
-        except ValueError:
-            print("  Stratified split failed → using non-stratified split")
-            X_train, X_dev, y_train, y_dev = train_test_split(
-                X_train, y_train,
-                test_size=test_size,
-                random_state=random_state
-            )
-    
-    print(f"\nFinal dataset sizes:")
-    print(f"  Train: {len(X_train)}")
-    print(f"  Dev:   {len(X_dev)}")
-    
-    return X_train, X_dev, y_train, y_dev
-
-
-# ============================================================
-# 5. Build and train model
-# ============================================================
-
-def convert_ngram_range(params: dict) -> dict:
-    """Convert ngram_range from list to tuple (JSON doesn't support tuples)"""
-    if "ngram_range" in params and isinstance(params["ngram_range"], list):
-        params = params.copy()
-        params["ngram_range"] = tuple(params["ngram_range"])
-    return params
-
-
-def build_model(tfidf_params: dict = None, lr_params: dict = None):
-    """Build TF-IDF + Logistic Regression pipeline"""
-    
-    # Default TF-IDF parameters
-    if tfidf_params is None:
-        tfidf_params = {
-            "max_features": 5000,
-            "ngram_range": (1, 3)
-        }
-    else:
-        # Convert ngram_range from list to tuple if needed
-        tfidf_params = convert_ngram_range(tfidf_params)
-    
-    # Default Logistic Regression parameters
-    if lr_params is None:
-        lr_params = {
-            "max_iter": 500,
-            "class_weight": "balanced",
-            "n_jobs": -1
-        }
-    
-    model = Pipeline([
-        ("tfidf", TfidfVectorizer(**tfidf_params)),
-        ("clf", LogisticRegression(**lr_params))
-    ])
-    
-    return model
-
-
-# ============================================================
-# 6. Evaluate model
-# ============================================================
-
-def evaluate_model(model, X, y, dataset_name: str = "Dataset"):
-    """Evaluate model and print results"""
-    y_pred = model.predict(X)
-    
-    print(f"\n{dataset_name} Results:")
-    print(classification_report(y, y_pred, digits=3))
-    acc = accuracy_score(y, y_pred)
-    print(f"{dataset_name} Accuracy: {acc:.3f}")
-    
-    return y_pred, acc
-
-
-# ============================================================
-# 7. Rule-based prediction wrapper
-# ============================================================
-
-def create_rule_based_predictor(model, pos_patterns: list, neg_patterns: list):
-    """
-    Create a rule-based prediction function that overrides model predictions
-    
-    Args:
-        model: Trained sklearn pipeline
-        pos_patterns: List of positive hope patterns
-        neg_patterns: List of negative/no-hope patterns
-    
-    Returns:
-        Function that takes texts and returns (base_preds, rule_adjusted_preds)
-    """
-    
-    def contains_any(text: str, patterns: list) -> bool:
-        text_lower = text.lower()
-        return any(pattern in text_lower for pattern in patterns)
-    
-    def predict_with_rules(texts):
-        base_preds = model.predict(texts)
-        adjusted_preds = base_preds.copy()
-        
-        for i, text in enumerate(texts):
-            # Positive patterns override to Hope_speech (1)
-            if contains_any(text, pos_patterns):
-                adjusted_preds[i] = 1
-                continue
-            # Negative patterns override to Non_hope_speech (0)
-            if contains_any(text, neg_patterns):
-                adjusted_preds[i] = 0
-                continue
-        
-        return base_preds, adjusted_preds
-    
-    return predict_with_rules
-
-
-# ============================================================
-# 8. Main training function for one language
-# ============================================================
-
-def train_language_model(
-    lang_name: str,
-    lang_config: dict,
-    base_dir: Path,
-    processed_dir: Path,
-    models_dir: Path,
-    balance_method: str = "undersample",
-    tfidf_params: dict = None,
-    lr_params: dict = None
-):
-    """
-    Train model for one language
-    
-    Args:
-        lang_name: Language name (e.g., 'english', 'tamil', 'malayalam')
-        lang_config: Language-specific config from config.json
-        base_dir: Base directory path
-        processed_dir: Directory with processed CSV files
-        models_dir: Directory to save models
-        balance_method: 'undersample' or 'oversample'
-        tfidf_params: TF-IDF parameters (optional)
-        lr_params: Logistic Regression parameters (optional)
-    """
-    
-    print("\n" + "=" * 60)
-    print(f"Training {lang_name.upper()} Model")
-    print("=" * 60)
-    
-    # Construct file paths
-    train_path = processed_dir / f"{lang_name}_train_processed.csv"
-    dev_path = processed_dir / f"{lang_name}_dev_processed.csv"
-    test_path = processed_dir / f"{lang_name}_test_processed.csv"
-    
-    print(f"\nLoading data:")
-    print(f"  Train: {train_path}")
-    print(f"  Dev:   {dev_path}")
-    print(f"  Test:  {test_path}")
-    
-    # Load data
-    train_df = pd.read_csv(train_path)
-    dev_df = pd.read_csv(dev_path) if dev_path.exists() else None
-    test_df = pd.read_csv(test_path) if test_path.exists() else None
-    
-    print(f"\nLoaded:")
-    print(f"  Train: {len(train_df)} rows")
-    if dev_df is not None:
-        print(f"  Dev:   {len(dev_df)} rows")
-    if test_df is not None:
-        print(f"  Test:  {len(test_df)} rows")
-    
-    # Clean data (keep only labels 0 and 1)
-    train_df = clean_dataframe(train_df, keep_labels=[0, 1])
-    if dev_df is not None:
-        dev_df = clean_dataframe(dev_df, keep_labels=[0, 1])
-    if test_df is not None:
-        test_df = clean_dataframe(test_df, keep_labels=[0, 1])
-    
-    print(f"\nAfter cleaning (labels 0 & 1 only):")
-    print(f"  Train: {len(train_df)} rows")
-    if dev_df is not None:
-        print(f"  Dev:   {len(dev_df)} rows")
-    if test_df is not None:
-        print(f"  Test:  {len(test_df)} rows")
-    
-    # Balance training data
-    train_balanced = balance_train_data(train_df, method=balance_method)
-    
-    # Prepare train/dev split
-    X_train, X_dev, y_train, y_dev = prepare_train_dev_split(
-        train_balanced,
-        dev_df
+    assert set(df["label"].unique()) <= {0, 1}, (
+        f"{path} contains non-binary labels — rerun preprocessing"
     )
-    
-    # Build model
+    return df.reset_index(drop=True)
+
+
+# ============================================================
+# 3. Model building
+# ============================================================
+
+def build_model(tfidf_params: dict, lr_params: dict) -> Pipeline:
+    """TF-IDF + Logistic Regression pipeline (params come from config)."""
+    tfidf_params = dict(tfidf_params)
+    if isinstance(tfidf_params.get("ngram_range"), list):
+        tfidf_params["ngram_range"] = tuple(tfidf_params["ngram_range"])
+    return Pipeline([
+        ("tfidf", TfidfVectorizer(**tfidf_params)),
+        ("clf", LogisticRegression(**lr_params)),
+    ])
+
+
+# ============================================================
+# 4. Rule-based prediction (module-level, picklable-friendly)
+# ============================================================
+
+def predict_with_rules(model, texts, pos_patterns, neg_patterns):
+    """
+    Model predictions with substring-rule overrides.
+
+    - text contains any positive pattern  -> forced to 1 (Hope)
+    - else text contains any neg pattern  -> forced to 0 (Non-hope)
+    - otherwise                            -> model prediction
+
+    Matching is case-insensitive substring. Positive rules take precedence.
+    """
+    base = model.predict(texts)
+    adjusted = base.copy()
+    pos = [p.lower() for p in pos_patterns]
+    neg = [n.lower() for n in neg_patterns]
+    for i, text in enumerate(texts):
+        t = str(text).lower()
+        if any(p in t for p in pos):
+            adjusted[i] = 1
+        elif any(n in t for n in neg):
+            adjusted[i] = 0
+    return adjusted
+
+
+def load_rules_model(path):
+    """
+    Load a rules-model file saved by this script.
+
+    Returns (model, pos_patterns, neg_patterns). Predict with:
+        preds = predict_with_rules(model, texts, pos_patterns, neg_patterns)
+    """
+    bundle = joblib.load(path)
+    return bundle["model"], bundle["pos_patterns"], bundle["neg_patterns"]
+
+
+# ============================================================
+# 5. Evaluation
+# ============================================================
+
+def compute_metrics(y_true, y_pred) -> dict:
+    """Accuracy + macro/weighted/Hope-class precision-recall-F1 + confusion."""
+    return {
+        "accuracy": round(accuracy_score(y_true, y_pred), 4),
+        "macro_f1": round(f1_score(y_true, y_pred, average="macro"), 4),
+        "weighted_f1": round(f1_score(y_true, y_pred, average="weighted"), 4),
+        "hope_f1": round(f1_score(y_true, y_pred, pos_label=1), 4),
+        "hope_precision": round(precision_score(y_true, y_pred, pos_label=1,
+                                                zero_division=0), 4),
+        "hope_recall": round(recall_score(y_true, y_pred, pos_label=1,
+                                          zero_division=0), 4),
+        "confusion_matrix": confusion_matrix(y_true, y_pred).tolist(),
+    }
+
+
+def evaluate(model, df: pd.DataFrame, name: str,
+             rules: tuple | None = None) -> dict:
+    """Evaluate base model (and rules variant if patterns given) on a split."""
+    X, y = df["text"], df["label"]
+    y_pred = model.predict(X)
+    out = {"base": compute_metrics(y, y_pred)}
+
+    print(f"\n--- {name} (base model) ---")
+    print(classification_report(y, y_pred, digits=3,
+                                target_names=["Non-hope (0)", "Hope (1)"]))
+
+    if rules is not None:
+        pos_patterns, neg_patterns = rules
+        y_rules = predict_with_rules(model, list(X), pos_patterns, neg_patterns)
+        out["with_rules"] = compute_metrics(y, y_rules)
+        n_changed = int((y_rules != y_pred).sum())
+        out["with_rules"]["n_predictions_changed_by_rules"] = n_changed
+        print(f"--- {name} (with rules: {n_changed} predictions changed) ---")
+        print(f"  macro F1 {out['base']['macro_f1']:.4f} -> "
+              f"{out['with_rules']['macro_f1']:.4f} | "
+              f"Hope F1 {out['base']['hope_f1']:.4f} -> "
+              f"{out['with_rules']['hope_f1']:.4f}")
+    return out
+
+
+# ============================================================
+# 6. Per-language pipeline
+# ============================================================
+
+def train_language(lang: str, lang_cfg: dict, processed_dir: Path,
+                   models_dir: Path, tfidf_params: dict,
+                   lr_params: dict) -> dict:
+    """Train, evaluate, and save base + rules models for one language."""
+    print("\n" + "=" * 60)
+    print(f"Training {lang.upper()} baseline")
+    print("=" * 60)
+
+    train_df = load_split(processed_dir, lang, "train")
+    dev_df = load_split(processed_dir, lang, "dev")
+    test_df = load_split(processed_dir, lang, "test")
+    print(f"Train: {len(train_df)}  (Hope: {int(train_df['label'].sum())}, "
+          f"Non-hope: {int((train_df['label'] == 0).sum())})")
+    print(f"Dev:   {len(dev_df)} | Test: {len(test_df)}")
+
     model = build_model(tfidf_params, lr_params)
-    
-    # Train model
-    print("\nTraining model...")
-    model.fit(X_train, y_train)
-    print("✓ Model trained!")
-    
-    # Evaluate on dev set
-    if len(X_dev) > 0:
-        evaluate_model(model, X_dev, y_dev, dataset_name="Validation")
-    
-    # Evaluate on test set
-    if test_df is not None and len(test_df) > 0:
-        X_test = test_df["text"]
-        y_test = test_df["label"]
-        evaluate_model(model, X_test, y_test, dataset_name="Test")
-    
-    # Save model
-    model_path = models_dir / f"hope_{lang_name}_model.pkl"
-    joblib.dump(model, model_path)
-    print(f"\n✓ Model saved to: {model_path}")
-    
-    # Load rule patterns if available
-    pos_patterns = lang_config.get("rule_patterns", {}).get("positive", [])
-    neg_patterns = lang_config.get("rule_patterns", {}).get("negative", [])
-    
-    if pos_patterns or neg_patterns:
-        print(f"\n✓ Rule-based patterns loaded:")
-        print(f"  Positive patterns: {len(pos_patterns)}")
-        print(f"  Negative patterns: {len(neg_patterns)}")
-        
-        # Create rule-based predictor
-        predict_with_rules = create_rule_based_predictor(model, pos_patterns, neg_patterns)
-        
-        # Save rule-based predictor as well
-        rule_model_path = models_dir / f"hope_{lang_name}_model_with_rules.pkl"
+    model.fit(train_df["text"], train_df["label"])
+
+    pos_patterns = lang_cfg.get("rule_patterns", {}).get("positive", [])
+    neg_patterns = lang_cfg.get("rule_patterns", {}).get("negative", [])
+    rules = (pos_patterns, neg_patterns) if (pos_patterns or neg_patterns) else None
+
+    results = {
+        "dev": evaluate(model, dev_df, f"{lang} DEV", rules),
+        "test": evaluate(model, test_df, f"{lang} TEST", rules),
+    }
+
+    # --- save base model ---
+    base_path = models_dir / f"hope_{lang}_model.pkl"
+    joblib.dump(model, base_path)
+    print(f"\nSaved base model  -> {base_path}")
+
+    # --- save rules bundle (plain dict: no closures, loads cleanly) ---
+    if rules is not None:
+        rules_path = models_dir / f"hope_{lang}_model_with_rules.pkl"
         joblib.dump({
             "model": model,
-            "predict_with_rules": predict_with_rules,
             "pos_patterns": pos_patterns,
-            "neg_patterns": neg_patterns
-        }, rule_model_path)
-        print(f"✓ Rule-based model saved to: {rule_model_path}")
-    
-    print(f"\n{'=' * 60}")
-    print(f"✓ {lang_name.upper()} training complete!")
-    print(f"{'=' * 60}")
-    
-    return model
+            "neg_patterns": neg_patterns,
+        }, rules_path)
+        print(f"Saved rules model -> {rules_path}")
+
+    return results
 
 
 # ============================================================
-# 9. Main orchestrator
+# 7. Entry point
 # ============================================================
 
 def main():
-    """Main training orchestrator - trains all languages from config"""
-    
-    # Load configuration
     base_dir = Path.cwd()
     config = load_config(base_dir / "config.json")
-    
-    # Setup directories
+
     processed_dir = base_dir / config["processed_dir"]
-    models_dir = base_dir / config.get("models_dir", "models")  # Read from config, default to "models"
+    models_dir = base_dir / config.get("models_dir", "models")
+    metrics_dir = base_dir / "metrics"
     models_dir.mkdir(exist_ok=True)
-    
-    # Training parameters (can be added to config.json if needed)
-    balance_method = config.get("training", {}).get("balance_method", "undersample")
-    
-    tfidf_params = config.get("training", {}).get("tfidf_params", {
-        "max_features": 5000,
-        "ngram_range": (1, 3)
-    })
-    
-    lr_params = config.get("training", {}).get("lr_params", {
-        "max_iter": 500,
-        "class_weight": "balanced",
-        "n_jobs": -1
-    })
-    
-    print("\n" + "=" * 60)
-    print("HOPE SPEECH BASELINE MODEL TRAINING")
+    metrics_dir.mkdir(exist_ok=True)
+
+    tfidf_params = config["training"]["tfidf_params"]
+    lr_params = config["training"]["lr_params"]
+
     print("=" * 60)
-    print(f"\nConfiguration:")
-    print(f"  Processed data dir: {processed_dir}")
-    print(f"  Models output dir:  {models_dir}")
-    print(f"  Balance method:     {balance_method}")
-    print(f"  TF-IDF params:      {tfidf_params}")
-    print(f"  LogReg params:      {lr_params}")
-    
-    # Train models for all languages
-    trained_models = {}
-    
-    for lang_name, lang_config in config["languages"].items():
-        try:
-            model = train_language_model(
-                lang_name=lang_name,
-                lang_config=lang_config,
-                base_dir=base_dir,
-                processed_dir=processed_dir,
-                models_dir=models_dir,
-                balance_method=balance_method,
-                tfidf_params=tfidf_params,
-                lr_params=lr_params
-            )
-            trained_models[lang_name] = model
-        except Exception as e:
-            print(f"\n Error training {lang_name}: {e}")
-            continue
-    
-    # Summary
-    print("\n" + "=" * 60)
-    print("TRAINING SUMMARY")
+    print("HOPE SPEECH BASELINE TRAINING (binary, full data + class weights)")
     print("=" * 60)
-    print(f"\nSuccessfully trained models for {len(trained_models)} languages:")
-    for lang_name in trained_models.keys():
-        model_path = models_dir / f"hope_{lang_name}_model.pkl"
-        print(f"  ✓ {lang_name.capitalize()}: {model_path}")
-    
+    print(f"TF-IDF: {tfidf_params}")
+    print(f"LogReg: {lr_params}")
+
+    all_results = {}
+    for lang, lang_cfg in config["languages"].items():
+        all_results[lang] = train_language(
+            lang, lang_cfg, processed_dir, models_dir, tfidf_params, lr_params
+        )
+
+    metrics_path = metrics_dir / "baseline_metrics.json"
+    with metrics_path.open("w", encoding="utf-8") as f:
+        json.dump(all_results, f, indent=2)
+    print(f"\nAll metrics saved -> {metrics_path}")
+
     print("\n" + "=" * 60)
-    print("✓ ALL TRAINING COMPLETE!")
+    print("SUMMARY (test set)")
     print("=" * 60)
+    print(f"{'Language':<12}{'Acc':>8}{'MacroF1':>10}{'HopeF1':>10}"
+          f"{'MacroF1+rules':>16}")
+    for lang, res in all_results.items():
+        t = res["test"]
+        rules_f1 = t.get("with_rules", {}).get("macro_f1", "-")
+        print(f"{lang.capitalize():<12}{t['base']['accuracy']:>8.3f}"
+              f"{t['base']['macro_f1']:>10.3f}{t['base']['hope_f1']:>10.3f}"
+              f"{rules_f1 if isinstance(rules_f1, str) else format(rules_f1, '>16.3f')}")
 
 
 if __name__ == "__main__":
