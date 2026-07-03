@@ -1,0 +1,119 @@
+{
+  "english": {
+    "base": {
+      "accuracy": 0.8622,
+      "macro_f1": 0.7065,
+      "weighted_f1": 0.8824,
+      "hope_f1": 0.4928,
+      "hope_precision": 0.3656,
+      "hope_recall": 0.756,
+      "confusion_matrix": [
+        [
+          2245,
+          328
+        ],
+        [
+          61,
+          189
+        ]
+      ]
+    },
+    "with_rules": {
+      "accuracy": 0.8622,
+      "macro_f1": 0.7065,
+      "weighted_f1": 0.8824,
+      "hope_f1": 0.4928,
+      "hope_precision": 0.3656,
+      "hope_recall": 0.756,
+      "confusion_matrix": [
+        [
+          2245,
+          328
+        ],
+        [
+          61,
+          189
+        ]
+      ],
+      "n_predictions_changed_by_rules": 0
+    }
+  },
+  "tamil": {
+    "base": {
+      "accuracy": 0.633,
+      "macro_f1": 0.6296,
+      "weighted_f1": 0.6323,
+      "hope_f1": 0.5943,
+      "hope_precision": 0.607,
+      "hope_recall": 0.5822,
+      "confusion_matrix": [
+        [
+          638,
+          305
+        ],
+        [
+          338,
+          471
+        ]
+      ]
+    },
+    "with_rules": {
+      "accuracy": 0.6341,
+      "macro_f1": 0.6309,
+      "weighted_f1": 0.6335,
+      "hope_f1": 0.5961,
+      "hope_precision": 0.608,
+      "hope_recall": 0.5847,
+      "confusion_matrix": [
+        [
+          638,
+          305
+        ],
+        [
+          336,
+          473
+        ]
+      ],
+      "n_predictions_changed_by_rules": 6
+    }
+  },
+  "malayalam": {
+    "base": {
+      "accuracy": 0.829,
+      "macro_f1": 0.7635,
+      "weighted_f1": 0.8382,
+      "hope_f1": 0.6389,
+      "hope_precision": 0.553,
+      "hope_recall": 0.7565,
+      "confusion_matrix": [
+        [
+          654,
+          118
+        ],
+        [
+          47,
+          146
+        ]
+      ]
+    },
+    "with_rules": {
+      "accuracy": 0.8342,
+      "macro_f1": 0.7674,
+      "weighted_f1": 0.8422,
+      "hope_f1": 0.6429,
+      "hope_precision": 0.5647,
+      "hope_recall": 0.7461,
+      "confusion_matrix": [
+        [
+          661,
+          111
+        ],
+        [
+          49,
+          144
+        ]
+      ],
+      "n_predictions_changed_by_rules": 9
+    }
+  }
+}
