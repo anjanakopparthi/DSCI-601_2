@@ -1,0 +1,13 @@
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+docs/build/
+processed/
+processed_old_sem/
+models/
+models_old_sem/
+archive/in_progress_scraping/
+*.pkl
+.env
+*.log
