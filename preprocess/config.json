@@ -1,0 +1,42 @@
+{
+  "initial_data_dir": "initial_data",
+  "processed_dir": "processed_data",
+  "languages": {
+    "english": {
+      "train_file": "english_hope_train.csv",
+      "dev_file": "english_hope_dev.csv",
+      "test_file": "english_hope_test.csv",
+      "label_map": {
+        "Hope_speech": 1,
+        "Non_hope_speech": 0
+      },
+      "drop_labels": [
+        "not-English"
+      ]
+    },
+    "tamil": {
+      "train_file": "tamil_hope_first_train.csv",
+      "dev_file": "tamil_hope_first_dev.csv",
+      "test_file": "tamil_hope_first_test.csv",
+      "label_map": {
+        "Hope_speech": 1,
+        "Non_hope_speech": 0
+      },
+      "drop_labels": [
+        "not-Tamil"
+      ]
+    },
+    "malayalam": {
+      "train_file": "malayalam_train.csv",
+      "dev_file": "malayalam_dev.csv",
+      "test_file": "malayalam_test.csv",
+      "label_map": {
+        "Hope_speech": 1,
+        "Non_hope_speech": 0
+      },
+      "drop_labels": [
+        "not-malayalam"
+      ]
+    }
+  }
+}

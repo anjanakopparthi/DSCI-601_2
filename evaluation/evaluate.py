@@ -144,7 +144,9 @@ def main():
     parser.add_argument("--split", choices=["dev", "test"], default="test")
     args = parser.parse_args()
 
-    base_dir = Path.cwd()
+    # Repo root = one level above the folder this script lives in.
+    # Works from any working directory (terminal, VS Code debugger, etc.)
+    base_dir = Path(__file__).resolve().parent.parent
     config_path = base_dir / "config.json"
     with config_path.open("r", encoding="utf-8") as f:
         config = json.load(f)

@@ -1,43 +1,28 @@
 """
-Multilingual Hope Speech Detection - Data Preprocessing (binary)
+Multilingual Hope Speech Detection - Data Preprocessing (v2, binary).
 
-What this script does:
-1. Reads config.json from the PROJECT ROOT by default.
-   Project structure expected:
+Fixes over the previous version:
+    1. Rows labeled `not-English` / `not-Tamil` / `not-malayalam` are DELETED
+       in every split. Output is strictly binary: 0 = Non_hope_speech,
+       1 = Hope_speech, for all three languages.
+    2. Strict label encoding — the buggy substring-heuristic fallback is gone.
+       Unknown labels are dropped (and counted), never guessed.
+    3. Negation-based relabeling of gold training labels is REMOVED.
+       (Rule-based logic belongs at prediction time, not in the labels.)
+    4. Lighter text cleaning that works for both TF-IDF and XLM-R:
+       remove URLs and @mentions, strip the '#' from hashtags (keep the word),
+       normalize whitespace. Punctuation, emoji, and casing are PRESERVED
+       (XLM-R is a cased model; TfidfVectorizer lowercases on its own).
+    5. Explicit deduplication and empty-row removal, with per-split stats.
 
-   DSCI-601_2/
-   ├── config.json
-   ├── initial_data/
-   ├── processed/
-   └── preprocess/
-       └── preprocess_all.py
+Usage:
+    $ python preprocess_all.py
 
-2. Uses paths from config.json:
-   - base_dir
-   - initial_data_dir
-   - processed_dir
-   - languages -> train/dev/test files
-
-3. Deletes not-in-language rows like:
-   - not-English
-   - not-Tamil
-   - not-Malayalam / not-malayalam
-
-4. Converts labels to binary:
-   - Non_hope_speech -> 0
-   - Hope_speech     -> 1
-
-5. Saves processed CSVs with columns:
-   text, label_str, label
-
-Run from anywhere:
-    python preprocess/preprocess_all.py
-
-Or with explicit config:
-    python preprocess/preprocess_all.py --config ../config.json
+Reads config.json from the current directory. Expects raw files in
+`initial_data/`, writes to `processed_data/` as
+`{language}_{split}_processed.csv` with columns: text, label_str, label.
 """
 
-import argparse
 import json
 import re
 from pathlib import Path
@@ -46,95 +31,85 @@ import pandas as pd
 
 
 # ============================================================
-# 1. Config loading and path handling
+# 1. Configuration
 # ============================================================
+
+DEFAULT_CONFIG = {
+    "initial_data_dir": "initial_data",
+    "processed_dir": "processed_data",
+    "languages": {
+        "english": {
+            "train_file": "english_hope_train.csv",
+            "dev_file": "english_hope_dev.csv",
+            "test_file": "english_hope_test.csv",
+            "label_map": {"Hope_speech": 1, "Non_hope_speech": 0},
+            "drop_labels": ["not-English"],
+        },
+        "tamil": {
+            "train_file": "tamil_hope_first_train.csv",
+            "dev_file": "tamil_hope_first_dev.csv",
+            "test_file": "tamil_hope_first_test.csv",
+            "label_map": {"Hope_speech": 1, "Non_hope_speech": 0},
+            "drop_labels": ["not-Tamil"],
+        },
+        "malayalam": {
+            "train_file": "malayalam_train.csv",
+            "dev_file": "malayalam_dev.csv",
+            "test_file": "malayalam_test.csv",
+            "label_map": {"Hope_speech": 1, "Non_hope_speech": 0},
+            "drop_labels": ["not-malayalam"],
+        },
+    },
+}
 
 
 def load_config(config_path: Path) -> dict:
-    """Load config.json."""
+    """Load config.json; if it does not exist, create it with defaults."""
     if not config_path.exists():
-        raise FileNotFoundError(
-            f"config.json not found at: {config_path}\n"
-            "Expected config.json in the project root, e.g. DSCI-601_2/config.json"
-        )
-
+        with config_path.open("w", encoding="utf-8") as f:
+            json.dump(DEFAULT_CONFIG, f, indent=2, ensure_ascii=False)
+        print(f"config.json not found — wrote default config to {config_path}")
+        return DEFAULT_CONFIG
     with config_path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def get_project_paths(config: dict, config_path: Path) -> tuple[Path, Path, Path]:
-    """
-    Resolve project paths correctly.
-
-    If config has:
-        "base_dir": "."
-    then base_dir is resolved relative to the folder containing config.json,
-    NOT relative to the preprocess/ script folder.
-    """
-    config_dir = config_path.parent.resolve()
-    base_dir_value = config.get("base_dir", ".")
-    base_dir = (config_dir / base_dir_value).resolve()
-
-    initial_data_dir = (base_dir / config["initial_data_dir"]).resolve()
-    processed_dir = (base_dir / config["processed_dir"]).resolve()
-
-    return base_dir, initial_data_dir, processed_dir
-
-
 # ============================================================
-# 2. Raw file parsing
+# 2. Raw file parsing (semicolon single-column format)
 # ============================================================
 
-
-def split_text_label(raw_value: str) -> tuple[str, str | None]:
+def split_text_label(s: str) -> tuple[str, str | None]:
     """
-    Parse one row of this format:
-        text content;Label;
+    Parse one raw row of the form 'text content;Label;'.
 
-    The last non-empty semicolon-separated token is treated as the label.
-    Everything before that is treated as text.
+    The last non-empty semicolon token is the label; everything before it
+    (rejoined with ';') is the text. Returns (text, label_or_None).
     """
-    parts = str(raw_value).split(";")
+    parts = str(s).split(";")
     tokens = [p for p in parts if p != ""]
-
     if len(tokens) == 0:
         return "", None
-
     if len(tokens) == 1:
-        return tokens[0].strip(), None
-
-    text = ";".join(tokens[:-1]).strip()
-    label = tokens[-1].strip()
-    return text, label
+        return tokens[0], None
+    return ";".join(tokens[:-1]), tokens[-1].strip()
 
 
-def parse_raw_file(input_path: Path) -> pd.DataFrame:
-    """Read raw CSV and return DataFrame with text and label_str."""
-    if not input_path.exists():
-        raise FileNotFoundError(f"Input file not found: {input_path}")
-
-    raw_df = pd.read_csv(
-        input_path,
-        header=None,
-        names=["raw"],
-        dtype=str,
-        skip_blank_lines=True,
-        encoding="utf-8",
+def parse_raw_file(path: Path) -> pd.DataFrame:
+    """Read the raw single-column CSV and split into text / label_str."""
+    raw = pd.read_csv(
+        path, header=None, names=["raw"], dtype=str,
+        skip_blank_lines=True, encoding="utf-8",
     )
-
-    texts = []
-    labels = []
-
-    for raw_value in raw_df["raw"].dropna():
-        text, label = split_text_label(raw_value)
-        texts.append(text)
-        labels.append(label)
-
+    texts, labels = [], []
+    for s in raw["raw"].dropna():
+        t, lab = split_text_label(s)
+        texts.append(t)
+        labels.append(lab)
     return pd.DataFrame({"text": texts, "label_str": labels})
 
 
 # ============================================================
-# 3. Text cleaning
+# 3. Text cleaning (light — safe for both TF-IDF and XLM-R)
 # ============================================================
 
 URL_RE = re.compile(r"(?:https?://|www\.)\S+")
@@ -145,179 +120,127 @@ WS_RE = re.compile(r"\s+")
 
 def clean_text(text: str) -> str:
     """
-    Light cleaning safe for both TF-IDF and XLM-R.
+    Light cleaning:
+        - remove URLs and @mentions
+        - '#hashtag' -> 'hashtag' (keep the word, drop the symbol)
+        - collapse whitespace
 
-    Keeps punctuation, casing, emoji, Tamil, Malayalam, etc.
+    Deliberately preserved: punctuation, emoji, casing, and native scripts —
+    XLM-R uses all of them; TfidfVectorizer handles lowercasing itself.
     """
     text = str(text)
     text = URL_RE.sub(" ", text)
-    text = HASH_RE.sub(r"\1", text)
-    text = MENTION_RE.sub(" ", text)
+    text = HASH_RE.sub(r"\1", text)   # unwrap hashtags BEFORE mention removal
+    text = MENTION_RE.sub(" ", text)  # so '@#user' doesn't survive as '@user'
     text = WS_RE.sub(" ", text)
     return text.strip()
 
 
 # ============================================================
-# 4. Per-split preprocessing
+# 4. Per-file pipeline
 # ============================================================
-
 
 def preprocess_file(
     input_path: Path,
-    output_path: Path,
     lang_name: str,
-    split_name: str,
     lang_cfg: dict,
+    output_path: Path,
+    split_name: str,
 ) -> pd.DataFrame:
-    """Preprocess one language split and save output CSV."""
-    print(f"\n=== {lang_name.upper()} - {split_name.upper()} ===")
-    print(f"Input : {input_path}")
-    print(f"Output: {output_path}")
+    """
+    Full pipeline for one split:
+        parse -> drop not-in-language rows -> clean text ->
+        strict label encode -> drop empties/dupes -> save CSV.
 
+    Output columns: text, label_str, label  (label in {0, 1} only).
+    """
+    print(f"\n=== {lang_name.upper()} — {split_name} ===")
     df = parse_raw_file(input_path)
-    original_count = len(df)
-    print(f"Parsed rows: {original_count}")
+    n0 = len(df)
+    print(f"  Parsed rows:            {n0}")
 
-    # Drop missing labels
-    before = len(df)
-    df = df.dropna(subset=["label_str"]).copy()
-    df["label_str"] = df["label_str"].astype(str).str.strip()
-    print(f"Dropped missing labels: {before - len(df)}")
+    # --- drop rows with missing labels ---
+    df = df.dropna(subset=["label_str"])
+    df["label_str"] = df["label_str"].str.strip()
 
-    # Drop not-in-language rows
-    drop_labels = {x.lower().strip() for x in lang_cfg.get("drop_labels", [])}
-    label_lower = df["label_str"].str.lower().str.strip()
+    # --- DELETE not-in-language rows (case-insensitive, startswith 'not') ---
+    drop_labels = {d.lower() for d in lang_cfg.get("drop_labels", [])}
+    is_not_lang = (
+        df["label_str"].str.lower().isin(drop_labels)
+        | df["label_str"].str.lower().str.startswith("not-")
+    )
+    n_not_lang = int(is_not_lang.sum())
+    df = df[~is_not_lang]
+    print(f"  Dropped not-in-language: {n_not_lang}")
 
-    is_not_language = label_lower.isin(drop_labels) | label_lower.str.startswith("not-")
-    not_language_count = int(is_not_language.sum())
-    df = df.loc[~is_not_language].copy()
-    print(f"Dropped not-in-language rows: {not_language_count}")
-
-    # Strict label mapping only
+    # --- strict label encoding: exact match only, drop anything unmapped ---
     label_map = lang_cfg["label_map"]
     df["label"] = df["label_str"].map(label_map)
-
-    unmapped_count = int(df["label"].isna().sum())
-    if unmapped_count:
-        bad_labels = df.loc[df["label"].isna(), "label_str"].unique()[:10]
-        print(f"Dropped unmapped labels: {unmapped_count}")
-        print(f"Unmapped examples: {bad_labels}")
-
-    df = df.dropna(subset=["label"]).copy()
+    n_unmapped = int(df["label"].isna().sum())
+    if n_unmapped:
+        print(f"  Dropped unmapped labels: {n_unmapped} "
+              f"({df.loc[df['label'].isna(), 'label_str'].unique()[:5]})")
+    df = df.dropna(subset=["label"])
     df["label"] = df["label"].astype(int)
 
-    # Clean text
+    # --- clean text ---
     df["text"] = df["text"].apply(clean_text)
 
-    # Drop empty text
-    before = len(df)
-    df = df[df["text"].str.strip() != ""].copy()
-    print(f"Dropped empty text rows: {before - len(df)}")
+    # --- drop empty text ---
+    n_before = len(df)
+    df = df[df["text"].str.strip() != ""]
+    print(f"  Dropped empty text:      {n_before - len(df)}")
 
-    # Drop duplicates
-    before = len(df)
+    # --- deduplicate exact (text, label) pairs ---
+    n_before = len(df)
     df = df.drop_duplicates(subset=["text", "label"]).reset_index(drop=True)
-    print(f"Dropped duplicate rows: {before - len(df)}")
+    print(f"  Dropped duplicates:      {n_before - len(df)}")
 
-    # Save
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    df[["text", "label_str", "label"]].to_csv(output_path, index=False, encoding="utf-8")
+    print(f"  Final rows:              {len(df)}")
+    print(f"  Label distribution:      {df['label'].value_counts().to_dict()}"
+          f"  (1 = Hope, 0 = Non-hope)")
 
-    print(f"Final rows: {len(df)}")
-    print(f"Label distribution: {df['label'].value_counts().to_dict()}")
-    print("Saved successfully")
-
+    df[["text", "label_str", "label"]].to_csv(
+        output_path, index=False, encoding="utf-8"
+    )
+    print(f"  Saved -> {output_path}")
     return df
 
 
 # ============================================================
-# 5. Main
+# 5. Entry point
 # ============================================================
 
+def main():
+    # Repo root = one level above the folder this script lives in.
+    # Works from any working directory (terminal, VS Code debugger, etc.)
+    base_dir = Path(__file__).resolve().parent.parent
+    config = load_config(base_dir / "config.json")
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config",
-        default=None,
-        help="Path to config.json. If not given, uses ../config.json from this script location.",
-    )
-    args = parser.parse_args()
+    initial_data_dir = base_dir / config["initial_data_dir"]
+    processed_dir = base_dir / config["processed_dir"]
+    processed_dir.mkdir(exist_ok=True)
 
-    # IMPORTANT FIX:
-    # preprocess_all.py is inside DSCI-601_2/preprocess/
-    # config.json is inside DSCI-601_2/
-    if args.config:
-        config_path = Path(args.config).resolve()
-    else:
-        config_path = Path(__file__).resolve().parent.parent / "config.json"
-
-    config = load_config(config_path)
-    base_dir, initial_data_dir, processed_dir = get_project_paths(config, config_path)
-
-    print("=" * 70)
-    print("PREPROCESSING CONFIG")
-    print("=" * 70)
-    print(f"Config path      : {config_path}")
-    print(f"Base dir         : {base_dir}")
-    print(f"Initial data dir : {initial_data_dir}")
-    print(f"Processed dir    : {processed_dir}")
-
-    if not initial_data_dir.exists():
-        raise FileNotFoundError(
-            f"Initial data directory does not exist: {initial_data_dir}\n"
-            "Your folder structure should be like:\n"
-            "DSCI-601_2/initial_data/\n"
-            "DSCI-601_2/processed/\n"
-            "DSCI-601_2/preprocess/preprocess_all.py\n"
-            "DSCI-601_2/config.json"
-        )
-
-    processed_dir.mkdir(parents=True, exist_ok=True)
-
-    all_counts = []
-
+    all_stats = []
     for lang_name, lang_cfg in config["languages"].items():
-        print("\n" + "=" * 70)
-        print(f"PROCESSING LANGUAGE: {lang_name.upper()}")
-        print("=" * 70)
+        print("\n" + "=" * 60)
+        print(f"Processing language: {lang_name.upper()}")
+        print("=" * 60)
 
-        split_counts = {}
+        counts = {}
+        for split in ("train", "dev", "test"):
+            in_path = initial_data_dir / lang_cfg[f"{split}_file"]
+            out_path = processed_dir / f"{lang_name}_{split}_processed.csv"
+            df = preprocess_file(in_path, lang_name, lang_cfg, out_path, split)
+            counts[split] = len(df)
+        all_stats.append((lang_name, counts))
 
-        for split_name in ["train", "dev", "test"]:
-            file_key = f"{split_name}_file"
-            input_file = lang_cfg[file_key]
-
-            input_path = initial_data_dir / input_file
-            output_path = processed_dir / f"{lang_name}_{split_name}_processed.csv"
-
-            processed_df = preprocess_file(
-                input_path=input_path,
-                output_path=output_path,
-                lang_name=lang_name,
-                split_name=split_name,
-                lang_cfg=lang_cfg,
-            )
-
-            split_counts[split_name] = len(processed_df)
-
-        all_counts.append((lang_name, split_counts))
-
-    print("\n" + "=" * 70)
-    print("SUMMARY")
-    print("=" * 70)
-    print("Binary labels: 0 = Non_hope_speech, 1 = Hope_speech")
-
-    for lang_name, counts in all_counts:
-        print(
-            f"{lang_name:10s} -> "
-            f"train: {counts['train']:6d}, "
-            f"dev: {counts['dev']:6d}, "
-            f"test: {counts['test']:6d}"
-        )
-
-    print("\nAll processed files saved to:")
-    print(processed_dir)
+    print("\n" + "=" * 60)
+    print("SUMMARY: final sample counts (binary: 0 = Non-hope, 1 = Hope)")
+    print("=" * 60)
+    for lang_name, c in all_stats:
+        print(f"{lang_name.capitalize():10s} -> "
+              f"train: {c['train']:5d}, dev: {c['dev']:5d}, test: {c['test']:5d}")
 
 
 if __name__ == "__main__":

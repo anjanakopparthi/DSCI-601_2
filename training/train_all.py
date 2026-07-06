@@ -220,7 +220,9 @@ def train_language(lang: str, lang_cfg: dict, processed_dir: Path,
 # ============================================================
 
 def main():
-    base_dir = Path.cwd()
+    # Repo root = one level above the folder this script lives in.
+    # Works from any working directory (terminal, VS Code debugger, etc.)
+    base_dir = Path(__file__).resolve().parent.parent
     config = load_config(base_dir / "config.json")
 
     processed_dir = base_dir / config["processed_dir"]
