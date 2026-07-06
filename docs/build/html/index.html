@@ -1,0 +1,1455 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hope Speech Detection Documentation &mdash; Hope Speech Preprocessing 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Hope Speech Preprocessing
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Hope Speech Detection Documentation</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a><ul>
+<li><a class="reference internal" href="#module-preprocess_all_sphinx">Preprocessing Module</a><ul>
+<li><a class="reference internal" href="#preprocess_all_sphinx.None"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.apply_negation_rule"><code class="docutils literal notranslate"><span class="pre">apply_negation_rule()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.clean_text"><code class="docutils literal notranslate"><span class="pre">clean_text()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.encode_label"><code class="docutils literal notranslate"><span class="pre">encode_label()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.load_config"><code class="docutils literal notranslate"><span class="pre">load_config()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.parse_raw_file_single_column"><code class="docutils literal notranslate"><span class="pre">parse_raw_file_single_column()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.parse_standard_csv"><code class="docutils literal notranslate"><span class="pre">parse_standard_csv()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.preprocess_file"><code class="docutils literal notranslate"><span class="pre">preprocess_file()</span></code></a></li>
+<li><a class="reference internal" href="#preprocess_all_sphinx.split_text_label"><code class="docutils literal notranslate"><span class="pre">split_text_label()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-train_all_sphinx">Training Module</a><ul>
+<li><a class="reference internal" href="#train_all_sphinx.None"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.balance_train_data"><code class="docutils literal notranslate"><span class="pre">balance_train_data()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.clean_dataframe"><code class="docutils literal notranslate"><span class="pre">clean_dataframe()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.convert_ngram_range"><code class="docutils literal notranslate"><span class="pre">convert_ngram_range()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.create_rule_based_predictor"><code class="docutils literal notranslate"><span class="pre">create_rule_based_predictor()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.evaluate_model"><code class="docutils literal notranslate"><span class="pre">evaluate_model()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.load_config"><code class="docutils literal notranslate"><span class="pre">load_config()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.prepare_train_dev_split"><code class="docutils literal notranslate"><span class="pre">prepare_train_dev_split()</span></code></a></li>
+<li><a class="reference internal" href="#train_all_sphinx.train_language_model"><code class="docutils literal notranslate"><span class="pre">train_language_model()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Hope Speech Preprocessing</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Hope Speech Detection Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hope-speech-detection-documentation">
+<h1>Hope Speech Detection Documentation<a class="headerlink" href="#hope-speech-detection-documentation" title="Link to this heading"></a></h1>
+<p>Welcome to the Hope Speech Detection project documentation.</p>
+<p>This project provides comprehensive preprocessing and training pipelines for
+multilingual hope speech detection across English, Tamil, and Malayalam.</p>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h2>
+<section id="module-preprocess_all_sphinx">
+<span id="preprocessing-module"></span><h3>Preprocessing Module<a class="headerlink" href="#module-preprocess_all_sphinx" title="Link to this heading"></a></h3>
+<p>Multilingual Hope Speech Detection - Data Preprocessing Module.</p>
+<p>This module provides comprehensive preprocessing functionality for hope speech
+detection datasets across multiple languages (English, Tamil, Malayalam). It handles
+text cleaning, label encoding, negation detection, and generates processed CSV files
+ready for model training.</p>
+<dl class="simple">
+<dt>The preprocessing pipeline supports:</dt><dd><ul class="simple">
+<li><p>Multiple input formats (single-column semicolon-delimited and standard CSV)</p></li>
+<li><p>Language-specific text cleaning with Unicode support</p></li>
+<li><p>Configurable label mapping and encoding</p></li>
+<li><p>Negation-based label correction for Tamil</p></li>
+<li><p>Automated processing of train/dev/test splits</p></li>
+</ul>
+</dd>
+<dt>Configuration is managed through a config.json file that specifies:</dt><dd><ul class="simple">
+<li><p>Input/output directory paths</p></li>
+<li><p>Language-specific file names</p></li>
+<li><p>Label mappings for each language</p></li>
+<li><p>Negation detection rules</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Basic usage from command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python preprocess_all.py
+</pre></div>
+</div>
+<p>This will read config.json and process all configured languages.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.None">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">None</span></span><a class="headerlink" href="#preprocess_all_sphinx.None" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>module-level attributes are not used</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.apply_negation_rule">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">apply_negation_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#apply_negation_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.apply_negation_rule" title="Link to this definition"></a></dt>
+<dd><p>Apply negation-based label correction rules to training data.</p>
+<p>Identifies instances where negation words appear near hope-related keywords
+and relabels them from Hope_speech to Non_hope_speech. This addresses cases
+like “no hope” or “I don’t believe in change” that are incorrectly labeled.</p>
+<p>The function is primarily designed for Tamil language data but can be
+configured for other languages through the neg_cfg parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – Input DataFrame with ‘text’ and ‘label_str’ columns.</p></li>
+<li><p><strong>neg_cfg</strong> (<em>dict</em>) – <p>Negation configuration dictionary with structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>              <span class="c1"># Whether to apply rule</span>
+    <span class="s2">&quot;hope_word&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>             <span class="c1"># Hope keyword (e.g., &quot;நம்பிக்கை&quot;)</span>
+    <span class="s2">&quot;patterns&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>       <span class="c1"># Negation patterns to detect</span>
+    <span class="s2">&quot;hope_label_str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>        <span class="c1"># Label to match (e.g., &quot;Hope_speech&quot;)</span>
+    <span class="s2">&quot;non_hope_label_str&quot;</span><span class="p">:</span> <span class="nb">str</span>     <span class="c1"># Label to assign (e.g., &quot;Non_hope_speech&quot;)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Modified DataFrame with corrected labels. Original DataFrame</dt><dd><p>is not modified; a copy is returned.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Only rows matching ALL three conditions are relabeled:</dt><dd><ol class="arabic simple">
+<li><p>Current label matches hope_label_str</p></li>
+<li><p>Text contains at least one negation pattern</p></li>
+<li><p>Text contains the hope_word</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p>The function prints the number of relabeled rows for verification</p></li>
+<li><p>Temporary helper columns are created and removed during processing</p></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If neg_cfg[“enabled”] is False or not present, the function returns
+the DataFrame unmodified.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">neg_cfg</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;hope_word&quot;</span><span class="p">:</span> <span class="s2">&quot;hope&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;patterns&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;not&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;hope_label_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Hope_speech&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;non_hope_label_str&quot;</span><span class="p">:</span> <span class="s2">&quot;Non_hope_speech&quot;</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">apply_negation_rule</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">neg_cfg</span><span class="p">)</span>
+<span class="go">Negation rule: 15 rows relabeled Hope_speech → Non_hope_speech</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.clean_text">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">clean_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#clean_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.clean_text" title="Link to this definition"></a></dt>
+<dd><p>Clean and normalize text for a specific language.</p>
+<dl class="simple">
+<dt>Performs comprehensive text cleaning including:</dt><dd><ul class="simple">
+<li><p>URL removal (<a class="reference external" href="http://">http://</a>, <a class="reference external" href="https://">https://</a>, www.)</p></li>
+<li><p>Social media artifact removal (mentions, hashtags)</p></li>
+<li><p>Character filtering (keeps alphanumeric, whitespace, and Indian scripts)</p></li>
+<li><p>Whitespace normalization</p></li>
+<li><p>Case normalization (English only)</p></li>
+</ul>
+</dd>
+<dt>The function preserves Unicode ranges for:</dt><dd><ul class="simple">
+<li><p>Malayalam: U+0D00 to U+0D7F</p></li>
+<li><p>Tamil: U+0B80 to U+0BFF</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Raw input text to be cleaned.</p></li>
+<li><p><strong>lang</strong> (<em>str</em>) – Language identifier. Accepts “english”, “tamil”, “malayalam”.
+Case-insensitive. Only English text is lowercased.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Cleaned and normalized text string. Empty strings and whitespace-only</dt><dd><p>strings are stripped to empty string.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Non-English languages preserve case to maintain script integrity</p></li>
+<li><p>All special characters except language-specific scripts are removed</p></li>
+<li><p>Multiple consecutive spaces are collapsed to single space</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Check out https://example.com #hope @user great news!!!&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clean_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;english&quot;</span><span class="p">)</span>
+<span class="go">&#39;check out great news&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tamil_text</span> <span class="o">=</span> <span class="s2">&quot;நம்பிக்கை @user இருக்கிறது&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clean_text</span><span class="p">(</span><span class="n">tamil_text</span><span class="p">,</span> <span class="s2">&quot;tamil&quot;</span><span class="p">)</span>
+<span class="go">&#39;நம்பிக்கை இருக்கிறது&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.encode_label">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">encode_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#encode_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.encode_label" title="Link to this definition"></a></dt>
+<dd><p>Encode string labels to numeric values using configured mapping.</p>
+<p>Converts human-readable label strings to integer codes for model training.
+Uses exact matching first, then applies heuristic fallback for variations.</p>
+<dl class="simple">
+<dt>The function implements a two-tier matching strategy:</dt><dd><ol class="arabic simple">
+<li><p>Exact match: Direct lookup in provided label_map</p></li>
+<li><p>Heuristic match: Substring-based detection for common variations</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>str</em>) – Raw label string from dataset (e.g., “Hope_speech”,
+“Non_hope_speech”, “hope”, “non-hope”).</p></li>
+<li><p><strong>label_map</strong> (<em>dict</em>) – <p>Mapping dictionary from config, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;Hope_speech&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;Non_hope_speech&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Encoded numeric label. Typical values:</dt><dd><ul class="simple">
+<li><p>0: Non-hope speech</p></li>
+<li><p>1: Hope speech</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>Heuristic fallback rules:</dt><dd><ul class="simple">
+<li><p>If “hope” substring found: searches label_map for hope-related key,
+defaults to 1</p></li>
+<li><p>Otherwise: searches for non-hope-related key, defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The heuristic fallback may produce unexpected results if label_map
+keys don’t follow standard naming conventions.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">label_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Hope_speech&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Non_hope_speech&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encode_label</span><span class="p">(</span><span class="s2">&quot;Hope_speech&quot;</span><span class="p">,</span> <span class="n">label_map</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encode_label</span><span class="p">(</span><span class="s2">&quot;hope&quot;</span><span class="p">,</span> <span class="n">label_map</span><span class="p">)</span>  <span class="c1"># Heuristic match</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encode_label</span><span class="p">(</span><span class="s2">&quot;Non_hope_speech&quot;</span><span class="p">,</span> <span class="n">label_map</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.load_config">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.load_config" title="Link to this definition"></a></dt>
+<dd><p>Load and parse the JSON configuration file.</p>
+<p>Reads the configuration file that contains all settings for preprocessing,
+including file paths, language-specific parameters, label mappings, and
+negation detection rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>Path</em>) – Path object pointing to the config.json file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary containing all configuration parameters with structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;initial_data_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;initial_data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;processed_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;processed_data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;languages&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;english&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;train_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dev_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;test_file&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;label_map&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+            <span class="s2">&quot;single_column_semicolon&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+            <span class="s2">&quot;negation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+        <span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the configuration file does not exist at the
+    specified path.</p></li>
+<li><p><strong>json.JSONDecodeError</strong> – If the file exists but contains invalid JSON.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;processed_dir&quot;</span><span class="p">])</span>
+<span class="go">&#39;processed_data&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.main">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.main" title="Link to this definition"></a></dt>
+<dd><p>Main execution function - orchestrates preprocessing for all languages.</p>
+<dl class="simple">
+<dt>This function:</dt><dd><ol class="arabic simple">
+<li><p>Loads configuration from config.json</p></li>
+<li><p>Creates output directory structure</p></li>
+<li><p>Iterates through all configured languages</p></li>
+<li><p>Processes train/dev/test splits for each language</p></li>
+<li><p>Prints summary statistics</p></li>
+</ol>
+</dd>
+</dl>
+<p>The function processes languages in the order they appear in config.json
+and handles all file I/O operations automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If config.json is not found in current directory.</p></li>
+<li><p><strong>KeyError</strong> – If required configuration keys are missing.</p></li>
+<li><p><strong>Any exceptions from preprocessing steps are propagated.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Creates processed_dir if it doesn’t exist</p></li>
+<li><p>Output files are named: {language}_{split}_processed.csv</p></li>
+<li><p>Prints detailed progress for each language and split</p></li>
+<li><p>Final summary shows sample counts for all languages</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<p>Expected console output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>============================================================
+Processing language: ENGLISH
+============================================================
+
+=== ENGLISH — train ===
+Input:  initial_data/english_train.csv
+Output: processed_data/english_train_processed.csv
+...
+
+============================================================
+SUMMARY: final sample counts
+============================================================
+English    → train:  4523, dev:   500, test:   500
+Tamil      → train:  3891, dev:   450, test:   450
+Malayalam  → train:  4102, dev:   475, test:   475
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>preprocess_file: Core preprocessing function called for each file
+load_config: Configuration loading function</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.parse_raw_file_single_column">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">parse_raw_file_single_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#parse_raw_file_single_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.parse_raw_file_single_column" title="Link to this definition"></a></dt>
+<dd><p>Parse CSV file with single-column semicolon-delimited format.</p>
+<p>Reads a CSV file where each row contains a single column with
+semicolon-separated text and label, then splits into structured format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – Path to the input CSV file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with columns:</dt><dd><ul class="simple">
+<li><p>text (str): Extracted text content</p></li>
+<li><p>label_str (str): Label string (may contain None values)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Input file should have no headers. The function assigns a temporary
+column name “raw” during processing.</p>
+</div>
+<p class="rubric">Example</p>
+<p>Input CSV content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;I have hope for tomorrow;Hope_speech;&quot;</span>
+<span class="s2">&quot;This is terrible;Non_hope_speech;&quot;</span>
+</pre></div>
+</div>
+<p>Output DataFrame:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                        <span class="n">text</span>         <span class="n">label_str</span>
+<span class="mi">0</span>  <span class="n">I</span> <span class="n">have</span> <span class="n">hope</span> <span class="k">for</span> <span class="n">tomorrow</span>      <span class="n">Hope_speech</span>
+<span class="mi">1</span>           <span class="n">This</span> <span class="ow">is</span> <span class="n">terrible</span>  <span class="n">Non_hope_speech</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>split_text_label: Function used to parse each row</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.parse_standard_csv">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">parse_standard_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label_str'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#parse_standard_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.parse_standard_csv" title="Link to this definition"></a></dt>
+<dd><p>Parse standard CSV file with explicit text and label columns.</p>
+<p>Reads a CSV file with headers and extracts specified columns for
+text and labels. This is the standard format for pre-formatted datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Path</em>) – Path to the input CSV file.</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the column containing text.
+Defaults to “text”.</p></li>
+<li><p><strong>label_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the column containing labels.
+Defaults to “label_str”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame containing only the text and label columns,</dt><dd><p>with original column names preserved.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If either text_col or label_col is not found in the CSV file.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">parse_standard_csv</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[&#39;text&#39;, &#39;label_str&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">parse_standard_csv</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">text_col</span><span class="o">=</span><span class="s2">&quot;content&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">label_col</span><span class="o">=</span><span class="s2">&quot;category&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[&#39;content&#39;, &#39;category&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.preprocess_file">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">preprocess_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#preprocess_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.preprocess_file" title="Link to this definition"></a></dt>
+<dd><p>Execute complete preprocessing pipeline for a single data file.</p>
+<dl class="simple">
+<dt>This is the main preprocessing function that orchestrates all steps:</dt><dd><ol class="arabic simple">
+<li><p>Parse input file (format determined by config)</p></li>
+<li><p>Apply negation rules (training data only)</p></li>
+<li><p>Clean text (language-specific)</p></li>
+<li><p>Encode labels to numeric values</p></li>
+<li><p>Remove invalid entries (empty text, missing labels)</p></li>
+<li><p>Save processed data to CSV</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path</strong> (<em>Path</em>) – Path to raw input CSV file.</p></li>
+<li><p><strong>lang_name</strong> (<em>str</em>) – Language identifier (“english”, “tamil”, “malayalam”).</p></li>
+<li><p><strong>lang_cfg</strong> (<em>dict</em>) – Language-specific configuration from config.json,
+containing file paths, label mappings, and processing rules.</p></li>
+<li><p><strong>output_path</strong> (<em>Path</em>) – Path where processed CSV will be saved.</p></li>
+<li><p><strong>split_name</strong> (<em>str</em>) – Data split identifier (“train”, “dev”, or “test”).
+Negation rules are only applied to “train” split.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Processed DataFrame with columns:</dt><dd><ul class="simple">
+<li><p>text (str): Cleaned text</p></li>
+<li><p>label_str (str): Original label string</p></li>
+<li><p>label (int): Encoded numeric label</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>The function prints detailed progress information including:</dt><dd><ul class="simple">
+<li><p>Input/output paths</p></li>
+<li><p>Original and final dataset shapes</p></li>
+<li><p>Label distributions (both string and numeric)</p></li>
+<li><p>Sample rows from processed data</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;raw_data/english_train.csv&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;processed/english_train_processed.csv&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lang_cfg</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;languages&quot;</span><span class="p">][</span><span class="s2">&quot;english&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">preprocess_file</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">input_path</span><span class="p">,</span> <span class="s2">&quot;english&quot;</span><span class="p">,</span> <span class="n">lang_cfg</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">=== ENGLISH — train ===</span>
+<span class="go">Input:  raw_data/english_train.csv</span>
+<span class="go">Output: processed/english_train_processed.csv</span>
+<span class="go">  Original shape: (5000, 2)</span>
+<span class="go">  ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="preprocess_all_sphinx.split_text_label">
+<span class="sig-prename descclassname"><span class="pre">preprocess_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">split_text_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#preprocess_all_sphinx.None" title="preprocess_all_sphinx.None"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/preprocess_all_sphinx.html#split_text_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocess_all_sphinx.split_text_label" title="Link to this definition"></a></dt>
+<dd><p>Parse semicolon-delimited single-column format.</p>
+<p>Extracts text and label from custom format where each row contains
+text content and label separated by semicolons.</p>
+<p>Format specification:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="n">content</span><span class="p">;</span><span class="n">Label_value</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The function handles:</dt><dd><ul class="simple">
+<li><p>Multiple semicolons within text content</p></li>
+<li><p>Trailing semicolons</p></li>
+<li><p>Missing labels (label-only tokens)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – Raw string from single-column CSV format.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>text (str): Extracted text content (may be empty string)</p></li>
+<li><p>label (str | None): Label string, or None if not present</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, str | None]</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>All tokens before the last non-empty token are considered text</p></li>
+<li><p>The last non-empty token is considered the label</p></li>
+<li><p>Empty strings between semicolons are ignored</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">split_text_label</span><span class="p">(</span><span class="s2">&quot;This is hope;Hope_speech;&quot;</span><span class="p">)</span>
+<span class="go">(&#39;This is hope&#39;, &#39;Hope_speech&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">split_text_label</span><span class="p">(</span><span class="s2">&quot;Text with;semicolon;Hope_speech;&quot;</span><span class="p">)</span>
+<span class="go">(&#39;Text with;semicolon&#39;, &#39;Hope_speech&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">split_text_label</span><span class="p">(</span><span class="s2">&quot;Only text;&quot;</span><span class="p">)</span>
+<span class="go">(&#39;Only text&#39;, None)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">split_text_label</span><span class="p">(</span><span class="s2">&quot;;;&quot;</span><span class="p">)</span>
+<span class="go">(&#39;&#39;, None)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-train_all_sphinx">
+<span id="training-module"></span><h3>Training Module<a class="headerlink" href="#module-train_all_sphinx" title="Link to this heading"></a></h3>
+<p>Multilingual Hope Speech Detection - Model Training Module.</p>
+<p>This module provides comprehensive training functionality for hope speech
+detection models across multiple languages (English, Tamil, Malayalam). It handles
+data balancing, model training, evaluation, and rule-based prediction enhancements.</p>
+<dl class="simple">
+<dt>The training pipeline supports:</dt><dd><ul class="simple">
+<li><p>Multiple languages with unified pipeline</p></li>
+<li><p>Data balancing (undersampling/oversampling)</p></li>
+<li><p>TF-IDF feature extraction with configurable parameters</p></li>
+<li><p>Logistic Regression classification</p></li>
+<li><p>Rule-based prediction overrides</p></li>
+<li><p>Automated train/dev/test evaluation</p></li>
+<li><p>Model persistence with joblib</p></li>
+</ul>
+</dd>
+<dt>Configuration is managed through a config.json file that specifies:</dt><dd><ul class="simple">
+<li><p>Processed data directory paths</p></li>
+<li><p>Model output directory</p></li>
+<li><p>Training parameters (balance method, TF-IDF settings, etc.)</p></li>
+<li><p>Language-specific rule patterns</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Basic usage from command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python train_all.py
+</pre></div>
+</div>
+<p>This will read config.json and train models for all configured languages.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="train_all_sphinx.None">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">None</span></span><a class="headerlink" href="#train_all_sphinx.None" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>module-level attributes are not used</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.balance_train_data">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">balance_train_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'undersample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/train_all_sphinx.html#balance_train_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.balance_train_data" title="Link to this definition"></a></dt>
+<dd><p>Balance training data to handle class imbalance.</p>
+<p>Addresses class imbalance using either undersampling (reducing majority class)
+or oversampling (increasing minority class) techniques. Prints before/after
+statistics for verification.</p>
+<dl class="simple">
+<dt>The function assumes binary classification with:</dt><dd><ul class="simple">
+<li><p>Label 0: Non_hope_speech (typically majority)</p></li>
+<li><p>Label 1: Hope_speech (typically minority)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – Input DataFrame with ‘label’ column containing 0s and 1s.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Balancing strategy. Options:
+- “undersample”: Reduce majority class to match minority
+- “oversample”: Increase minority class to match majority
+Defaults to “undersample”.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed for reproducibility.
+Defaults to 42.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Balanced DataFrame with equal class distribution,</dt><dd><p>shuffled randomly.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If method is not “undersample” or “oversample”.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If either class has 0 samples, balancing cannot be performed and
+the original DataFrame is returned with a warning message.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Undersampling: May lose information but prevents overfitting</p></li>
+<li><p>Oversampling: Uses all data but may cause overfitting on minority class</p></li>
+<li><p>Result is always shuffled to prevent ordering bias</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">balance_train_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;undersample&quot;</span><span class="p">)</span>
+<span class="go">Original distribution:</span>
+<span class="go">  Non_hope_speech (0): 100</span>
+<span class="go">  Hope_speech (1):     20</span>
+</pre></div>
+</div>
+<p>Balanced distribution (undersample):
+1    20
+0    20
+&gt;&gt;&gt; len(balanced)
+40</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.build_model">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfidf_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/train_all_sphinx.html#build_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.build_model" title="Link to this definition"></a></dt>
+<dd><p>Build TF-IDF + Logistic Regression classification pipeline.</p>
+<p>Creates a scikit-learn Pipeline combining TF-IDF vectorization and
+Logistic Regression classification. Uses sensible defaults if parameters
+are not provided.</p>
+<dl class="simple">
+<dt>The pipeline consists of two steps:</dt><dd><ol class="arabic simple">
+<li><p>TF-IDF Vectorization: Converts text to numerical features</p></li>
+<li><p>Logistic Regression: Binary classification</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tfidf_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Parameters for TfidfVectorizer.
+Common parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;max_features&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>      <span class="c1"># Maximum vocabulary size</span>
+    <span class="s2">&quot;ngram_range&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>     <span class="c1"># Use unigrams to trigrams</span>
+    <span class="s2">&quot;min_df&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>               <span class="c1"># Minimum document frequency</span>
+    <span class="s2">&quot;max_df&quot;</span><span class="p">:</span> <span class="mf">0.95</span>             <span class="c1"># Maximum document frequency</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Defaults to {“max_features”: 5000, “ngram_range”: (1, 3)}.</p>
+</p></li>
+<li><p><strong>lr_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Parameters for LogisticRegression.
+Common parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>           <span class="c1"># Maximum iterations</span>
+    <span class="s2">&quot;class_weight&quot;</span><span class="p">:</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="c1"># Handle class imbalance</span>
+    <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>              <span class="c1"># Use all CPU cores</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mf">1.0</span>                   <span class="c1"># Regularization strength</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Defaults to balanced model with 500 max iterations.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Trained pipeline with two steps:</dt><dd><ul class="simple">
+<li><p>”tfidf”: TfidfVectorizer instance</p></li>
+<li><p>”clf”: LogisticRegression instance</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>sklearn.pipeline.Pipeline</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>ngram_range in tfidf_params will be automatically converted from
+list to tuple if needed</p></li>
+<li><p>class_weight=”balanced” automatically adjusts for class imbalance</p></li>
+<li><p>n_jobs=-1 uses all available CPU cores for faster training</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">custom_params</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;max_features&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;ngram_range&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">tfidf_params</span><span class="o">=</span><span class="n">custom_params</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.clean_dataframe">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">clean_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/train_all_sphinx.html#clean_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.clean_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Clean and filter DataFrame for binary classification.</p>
+<dl class="simple">
+<dt>Removes invalid entries and ensures data quality by:</dt><dd><ul class="simple">
+<li><p>Filtering to specified label values only</p></li>
+<li><p>Removing rows with empty text</p></li>
+<li><p>Converting text to string type</p></li>
+<li><p>Handling missing values</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – Input DataFrame with ‘text’ and ‘label’ columns.</p></li>
+<li><p><strong>keep_labels</strong> (<em>list</em><em>, </em><em>optional</em>) – List of label values to retain.
+Defaults to [0, 1] for binary classification.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cleaned DataFrame with only valid entries.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Original DataFrame is not modified (uses copy)</p></li>
+<li><p>Empty strings after stripping whitespace are removed</p></li>
+<li><p>Missing text values are filled with empty string before filtering</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clean_df</span> <span class="o">=</span> <span class="n">clean_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">keep_labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">clean_df</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.convert_ngram_range">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">convert_ngram_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/train_all_sphinx.html#convert_ngram_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.convert_ngram_range" title="Link to this definition"></a></dt>
+<dd><p>Convert ngram_range parameter from list to tuple.</p>
+<p>JSON configuration files cannot store Python tuples directly, so
+ngram_range is typically stored as a list [1, 3]. This function
+converts it to the tuple (1, 3) required by scikit-learn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – Parameter dictionary that may contain ‘ngram_range’ key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>New dictionary with ngram_range converted to tuple if present.</dt><dd><p>If ngram_range is not present or already a tuple, returns a copy
+of the original dictionary.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Creates a copy to avoid modifying the original dictionary</p></li>
+<li><p>Only converts if ngram_range exists and is a list</p></li>
+<li><p>Handles other parameter types unchanged</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;max_features&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s2">&quot;ngram_range&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">converted</span> <span class="o">=</span> <span class="n">convert_ngram_range</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">converted</span><span class="p">[</span><span class="s2">&quot;ngram_range&quot;</span><span class="p">]</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">converted</span><span class="p">[</span><span class="s2">&quot;ngram_range&quot;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;tuple&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.create_rule_based_predictor">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">create_rule_based_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/train_all_sphinx.html#create_rule_based_predictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.create_rule_based_predictor" title="Link to this definition"></a></dt>
+<dd><p>Create rule-based prediction wrapper for model enhancement.</p>
+<p>Generates a prediction function that applies hand-crafted rules to
+override model predictions. This is useful for incorporating domain
+knowledge and handling specific linguistic patterns.</p>
+<dl class="simple">
+<dt>The rule-based approach works as follows:</dt><dd><ol class="arabic simple">
+<li><p>Model makes initial predictions</p></li>
+<li><p>Texts matching positive patterns → classified as Hope (1)</p></li>
+<li><p>Texts matching negative patterns → classified as Non-hope (0)</p></li>
+<li><p>Other texts keep model’s prediction</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Trained scikit-learn model with predict() method.</p></li>
+<li><p><strong>pos_patterns</strong> (<em>list</em>) – List of positive hope indicators (strings).
+Example: [“hope”, “believe”, “optimistic”, “bright future”]</p></li>
+<li><p><strong>neg_patterns</strong> (<em>list</em>) – List of negative/non-hope indicators (strings).
+Example: [“no hope”, “hopeless”, “impossible”, “never”]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl>
+<dt>Prediction function with signature:</dt><dd><p>predict_with_rules(texts) -&gt; (base_preds, adjusted_preds)</p>
+<dl class="simple">
+<dt>Where:</dt><dd><ul class="simple">
+<li><p>base_preds: Original model predictions</p></li>
+<li><p>adjusted_preds: Predictions after applying rules</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Pattern matching is case-insensitive</p></li>
+<li><p>Positive patterns take precedence over negative patterns</p></li>
+<li><p>Patterns are substring matches (not exact word matches)</p></li>
+<li><p>Empty pattern lists are allowed (no rules applied)</p></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Overly broad patterns may override correct model predictions.
+Test rule impacts on validation set before deployment.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pos_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hope&quot;</span><span class="p">,</span> <span class="s2">&quot;optimistic&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">neg_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;no hope&quot;</span><span class="p">,</span> <span class="s2">&quot;hopeless&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predict_fn</span> <span class="o">=</span> <span class="n">create_rule_based_predictor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">pos_patterns</span><span class="p">,</span> <span class="n">neg_patterns</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;I have hope&quot;</span><span class="p">,</span> <span class="s2">&quot;This is hopeless&quot;</span><span class="p">,</span> <span class="s2">&quot;Normal text&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">base_preds</span><span class="p">,</span> <span class="n">adjusted_preds</span> <span class="o">=</span> <span class="n">predict_fn</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &quot;I have hope&quot; → forced to 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &quot;This is hopeless&quot; → forced to 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &quot;Normal text&quot; → keeps model prediction</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.evaluate_model">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">evaluate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Dataset'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/train_all_sphinx.html#evaluate_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.evaluate_model" title="Link to this definition"></a></dt>
+<dd><p>Evaluate trained model and print comprehensive metrics.</p>
+<p>Generates predictions and computes classification metrics including
+precision, recall, F1-score, and accuracy. Prints a detailed classification
+report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Trained scikit-learn model or pipeline with predict() method.</p></li>
+<li><p><strong>X</strong> (<em>array-like</em>) – Input features (texts or feature vectors).</p></li>
+<li><p><strong>y</strong> (<em>array-like</em>) – True labels.</p></li>
+<li><p><strong>dataset_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of dataset for display purposes.
+Defaults to “Dataset”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Contains:</dt><dd><ul class="simple">
+<li><p>y_pred (np.ndarray): Predicted labels</p></li>
+<li><p>acc (float): Accuracy score (0.0 to 1.0)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>Prints classification report with:</dt><dd><ul class="simple">
+<li><p>Precision, Recall, F1-score for each class</p></li>
+<li><p>Support (number of samples) for each class</p></li>
+<li><p>Macro and weighted averages</p></li>
+<li><p>Overall accuracy</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_pred</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="s2">&quot;Test Set&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt>Test Set Results:</dt><dd><blockquote>
+<div><blockquote>
+<div><blockquote>
+<div><p>precision    recall  f1-score   support</p>
+</div></blockquote>
+<p>0      0.850     0.920     0.884       100
+1      0.900     0.810     0.852        90</p>
+</div></blockquote>
+<p>accuracy                          0.868       190</p>
+</div></blockquote>
+<p>macro avg      0.875     0.865     0.868       190</p>
+</dd>
+</dl>
+<p>weighted avg      0.873     0.868     0.869       190</p>
+<p>Test Set Accuracy: 0.868</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.load_config">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/train_all_sphinx.html#load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.load_config" title="Link to this definition"></a></dt>
+<dd><p>Load and parse the JSON configuration file.</p>
+<p>Reads the configuration file that contains all settings for model training,
+including file paths, training parameters, and language-specific settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>Path</em>) – Path object pointing to the config.json file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary containing all configuration parameters with structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;processed_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;processed_data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;models_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;models&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;training&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;balance_method&quot;</span><span class="p">:</span> <span class="s2">&quot;undersample&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tfidf_params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+        <span class="s2">&quot;lr_params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;languages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the configuration file does not exist at the
+    specified path.</p></li>
+<li><p><strong>json.JSONDecodeError</strong> – If the file exists but contains invalid JSON.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;models_dir&quot;</span><span class="p">])</span>
+<span class="go">&#39;models&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.main">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/train_all_sphinx.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.main" title="Link to this definition"></a></dt>
+<dd><p>Main training orchestrator - trains models for all configured languages.</p>
+<dl class="simple">
+<dt>Executes the complete multi-language training pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Loads configuration from config.json</p></li>
+<li><p>Sets up output directories</p></li>
+<li><p>Iterates through all configured languages</p></li>
+<li><p>Trains model for each language</p></li>
+<li><p>Saves all models</p></li>
+<li><p>Prints summary statistics</p></li>
+</ol>
+</dd>
+</dl>
+<p>The function is designed to be run as a standalone script and handles
+all file I/O, directory management, and error reporting.</p>
+<p>Configuration structure expected in config.json:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;processed_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;processed_data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;models_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;models&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;training&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;balance_method&quot;</span><span class="p">:</span> <span class="s2">&quot;undersample&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tfidf_params&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;max_features&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+            <span class="s2">&quot;ngram_range&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;lr_params&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+            <span class="s2">&quot;class_weight&quot;</span><span class="p">:</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;languages&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;english&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+        <span class="s2">&quot;tamil&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+        <span class="s2">&quot;malayalam&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If config.json is not found.</p></li>
+<li><p><strong>KeyError</strong> – If required configuration keys are missing.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Creates models_dir if it doesn’t exist</p></li>
+<li><p>Continues training other languages if one fails</p></li>
+<li><p>Prints comprehensive progress and summary information</p></li>
+<li><p>Each language model is independent (failure doesn’t stop others)</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<p>Expected console output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>============================================================
+HOPE SPEECH BASELINE MODEL TRAINING
+============================================================
+
+Configuration:
+  Processed data dir: processed_data
+  Models output dir:  models
+  Balance method:     undersample
+  TF-IDF params:      {...}
+  LogReg params:      {...}
+
+============================================================
+Training ENGLISH Model
+============================================================
+...
+
+============================================================
+TRAINING SUMMARY
+============================================================
+
+Successfully trained models for 3 languages:
+  ✓ English: models/hope_english_model.pkl
+  ✓ Tamil: models/hope_tamil_model.pkl
+  ✓ Malayalam: models/hope_malayalam_model.pkl
+
+============================================================
+✓ ALL TRAINING COMPLETE!
+============================================================
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>train_language_model: Individual language training function
+load_config: Configuration loading function</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.prepare_train_dev_split">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">prepare_train_dev_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dev_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dev_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/train_all_sphinx.html#prepare_train_dev_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.prepare_train_dev_split" title="Link to this definition"></a></dt>
+<dd><p>Prepare training and development sets for model training.</p>
+<p>Creates train/dev split using either a provided dev set or by splitting
+the training data. Handles edge cases like small dev sets and stratification
+failures gracefully.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_df</strong> (<em>pd.DataFrame</em>) – Training DataFrame with ‘text’ and ‘label’ columns.</p></li>
+<li><p><strong>dev_df</strong> (<em>pd.DataFrame</em><em>, </em><em>optional</em>) – Development/validation DataFrame.
+If None or too small, will split from train_df. Defaults to None.</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – Proportion of train_df to use for dev
+if dev_df is not provided. Defaults to 0.2 (20%).</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed for reproducibility.
+Defaults to 42.</p></li>
+<li><p><strong>min_dev_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum acceptable dev set size.
+If dev_df is smaller, will split from train instead. Defaults to 5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Four pandas Series objects:</dt><dd><ul class="simple">
+<li><p>X_train (pd.Series): Training texts</p></li>
+<li><p>X_dev (pd.Series): Development texts</p></li>
+<li><p>y_train (pd.Series): Training labels</p></li>
+<li><p>y_dev (pd.Series): Development labels</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Attempts stratified split first to preserve class distribution</p></li>
+<li><p>Falls back to non-stratified split if stratification fails
+(e.g., when a class has too few samples)</p></li>
+<li><p>Prints diagnostic information about split strategy and sizes</p></li>
+</ul>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_dev</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_dev</span> <span class="o">=</span> <span class="n">prepare_train_dev_split</span><span class="p">(</span><span class="n">train_df</span><span class="p">)</span>
+<span class="go">Dev set too small or missing → splitting from train</span>
+<span class="go">  Using stratified split</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Final dataset sizes:</dt><dd><p>Train: 3
+Dev:   1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="train_all_sphinx.train_language_model">
+<span class="sig-prename descclassname"><span class="pre">train_all_sphinx.</span></span><span class="sig-name descname"><span class="pre">train_language_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lang_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processed_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'undersample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tfidf_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/train_all_sphinx.html#train_language_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#train_all_sphinx.train_language_model" title="Link to this definition"></a></dt>
+<dd><p>Train complete model pipeline for a single language.</p>
+<p>Orchestrates the full training workflow including data loading, cleaning,
+balancing, model training, evaluation, and persistence. Optionally creates
+rule-enhanced variant if patterns are configured.</p>
+<dl class="simple">
+<dt>This is the main training function that executes:</dt><dd><ol class="arabic simple">
+<li><p>Load train/dev/test data from processed CSVs</p></li>
+<li><p>Clean and filter data to binary labels</p></li>
+<li><p>Balance training data (under/over sampling)</p></li>
+<li><p>Prepare train/dev splits</p></li>
+<li><p>Build and train TF-IDF + LogReg model</p></li>
+<li><p>Evaluate on dev and test sets</p></li>
+<li><p>Save model to disk</p></li>
+<li><p>Create and save rule-based variant if patterns exist</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lang_name</strong> (<em>str</em>) – Language identifier (“english”, “tamil”, “malayalam”).</p></li>
+<li><p><strong>lang_config</strong> (<em>dict</em>) – Language-specific configuration containing:
+- rule_patterns: Optional dict with “positive” and “negative” lists</p></li>
+<li><p><strong>base_dir</strong> (<em>Path</em>) – Project base directory.</p></li>
+<li><p><strong>processed_dir</strong> (<em>Path</em>) – Directory containing processed CSV files named:
+{lang_name}_train_processed.csv, etc.</p></li>
+<li><p><strong>models_dir</strong> (<em>Path</em>) – Directory where models will be saved.</p></li>
+<li><p><strong>balance_method</strong> (<em>str</em><em>, </em><em>optional</em>) – “undersample” or “oversample”.
+Defaults to “undersample”.</p></li>
+<li><p><strong>tfidf_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – TF-IDF parameters. Defaults to
+max_features=5000, ngram_range=(1,3).</p></li>
+<li><p><strong>lr_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Logistic Regression parameters.
+Defaults to max_iter=500, class_weight=”balanced”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Trained model pipeline.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>sklearn.pipeline.Pipeline</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If required CSV files don’t exist.</p></li>
+<li><p><strong>Exception</strong> – Any exceptions during training are caught and logged.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>Creates two model files:</dt><dd><ul class="simple">
+<li><p>hope_{lang}_model.pkl: Base model</p></li>
+<li><p>hope_{lang}_model_with_rules.pkl: Model + rules (if patterns exist)</p></li>
+</ul>
+</dd>
+<dt>Prints comprehensive progress information including:</dt><dd><ul class="simple">
+<li><p>Dataset sizes at each stage</p></li>
+<li><p>Class distributions</p></li>
+<li><p>Training progress</p></li>
+<li><p>Evaluation metrics</p></li>
+<li><p>File save confirmations</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lang_config</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;rule_patterns&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;positive&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;hope&quot;</span><span class="p">,</span> <span class="s2">&quot;optimistic&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s2">&quot;negative&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;hopeless&quot;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">train_language_model</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">lang_name</span><span class="o">=</span><span class="s2">&quot;english&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">lang_config</span><span class="o">=</span><span class="n">lang_config</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">base_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">processed_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;processed_data&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">models_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;models&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">============================================================</span>
+<span class="go">Training ENGLISH Model</span>
+<span class="go">============================================================</span>
+<span class="go">...</span>
+<span class="go">✓ ENGLISH training complete!</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anjana Kopparthi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
