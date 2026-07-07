@@ -11,3 +11,4 @@ archive/in_progress_scraping/
 *.pkl
 .env
 *.log
+data_collection/collected/
