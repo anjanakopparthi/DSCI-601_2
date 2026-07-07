@@ -1,0 +1,42 @@
+{
+  "language": "malayalam",
+  "model": "google/muril-base-cased",
+  "hyperparams": {
+    "max_len": 128,
+    "batch_size": 16,
+    "epochs": 6,
+    "lr": 2e-05,
+    "seed": 42
+  },
+  "dev": {
+    "loss": 0.5998,
+    "accuracy": 0.8577,
+    "macro_f1": 0.7802,
+    "weighted_f1": 0.8596,
+    "hope_f1": 0.6497,
+    "hope_precision": 0.6275,
+    "hope_recall": 0.6737
+  },
+  "test": {
+    "loss": 0.4808,
+    "accuracy": 0.8788,
+    "macro_f1": 0.8179,
+    "weighted_f1": 0.881,
+    "hope_f1": 0.7125,
+    "hope_precision": 0.6776,
+    "hope_recall": 0.7513,
+    "runtime": 1.5581,
+    "samples_per_second": 619.34,
+    "steps_per_second": 10.269,
+    "confusion_matrix": [
+      [
+        703,
+        69
+      ],
+      [
+        48,
+        145
+      ]
+    ]
+  }
+}

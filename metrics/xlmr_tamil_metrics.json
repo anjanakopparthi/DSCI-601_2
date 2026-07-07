@@ -1,0 +1,42 @@
+{
+  "language": "tamil",
+  "model": "xlm-roberta-base",
+  "hyperparams": {
+    "max_len": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "lr": 2e-05,
+    "seed": 42
+  },
+  "dev": {
+    "loss": 0.6379,
+    "accuracy": 0.6471,
+    "macro_f1": 0.6389,
+    "weighted_f1": 0.6464,
+    "hope_f1": 0.5847,
+    "hope_precision": 0.5926,
+    "hope_recall": 0.5769
+  },
+  "test": {
+    "loss": 0.6558,
+    "accuracy": 0.6187,
+    "macro_f1": 0.6137,
+    "weighted_f1": 0.6171,
+    "hope_f1": 0.5696,
+    "hope_precision": 0.5949,
+    "hope_recall": 0.5464,
+    "runtime": 2.5918,
+    "samples_per_second": 675.966,
+    "steps_per_second": 10.803,
+    "confusion_matrix": [
+      [
+        642,
+        301
+      ],
+      [
+        367,
+        442
+      ]
+    ]
+  }
+}

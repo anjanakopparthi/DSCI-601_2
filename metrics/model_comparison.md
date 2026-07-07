@@ -1,0 +1,17 @@
+# Model comparison (test set)
+
+| Language | Model | Accuracy | Macro F1 | Weighted F1 | Hope F1 | Hope Precision | Hope Recall |
+|---|---|---|---|---|---|---|---|
+| English | TF-IDF + LR | 0.862 | 0.707 | 0.882 | 0.493 | 0.366 | 0.756 |
+| English | TF-IDF + LR + rules | 0.862 | 0.707 | 0.882 | 0.493 | 0.366 | 0.756 |
+| English | XLM-R * | 0.914 | 0.768 | 0.919 | 0.584 | 0.509 | 0.684 |
+| Tamil | TF-IDF + LR | 0.633 | 0.630 | 0.632 | 0.594 | 0.607 | 0.582 |
+| Tamil | TF-IDF + LR + rules | 0.634 | 0.631 | 0.633 | 0.596 | 0.608 | 0.585 |
+| Tamil | XLM-R | 0.619 | 0.614 | 0.617 | 0.570 | 0.595 | 0.546 |
+| Tamil | MuRIL * | 0.640 | 0.635 | 0.638 | 0.595 | 0.619 | 0.572 |
+| Malayalam | TF-IDF + LR | 0.829 | 0.763 | 0.838 | 0.639 | 0.553 | 0.756 |
+| Malayalam | TF-IDF + LR + rules | 0.834 | 0.767 | 0.842 | 0.643 | 0.565 | 0.746 |
+| Malayalam | XLM-R | 0.834 | 0.777 | 0.845 | 0.665 | 0.558 | 0.824 |
+| Malayalam | MuRIL * | 0.879 | 0.818 | 0.881 | 0.713 | 0.678 | 0.751 |
+
+`*` = best test macro F1 for that language

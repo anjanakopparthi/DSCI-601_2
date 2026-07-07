@@ -1,0 +1,42 @@
+{
+  "language": "english",
+  "model": "xlm-roberta-base",
+  "hyperparams": {
+    "max_len": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "lr": 2e-05,
+    "seed": 42
+  },
+  "dev": {
+    "loss": 0.5593,
+    "accuracy": 0.9205,
+    "macro_f1": 0.7982,
+    "weighted_f1": 0.9254,
+    "hope_f1": 0.641,
+    "hope_precision": 0.5618,
+    "hope_recall": 0.7463
+  },
+  "test": {
+    "loss": 0.598,
+    "accuracy": 0.9136,
+    "macro_f1": 0.7677,
+    "weighted_f1": 0.9192,
+    "hope_f1": 0.5836,
+    "hope_precision": 0.5089,
+    "hope_recall": 0.684,
+    "runtime": 3.7995,
+    "samples_per_second": 742.983,
+    "steps_per_second": 11.844,
+    "confusion_matrix": [
+      [
+        2408,
+        165
+      ],
+      [
+        79,
+        171
+      ]
+    ]
+  }
+}
