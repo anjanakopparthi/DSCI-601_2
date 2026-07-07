@@ -53,16 +53,28 @@ COST_COMMENTS = 1
 # Search queries mirroring the HopeEDI topic domains, in Tamil + romanized
 # Tamil + English-with-Tamil-audience phrasing. Edit freely.
 SEARCH_QUERIES = [
-    "நம்பிக்கை motivation tamil",
-    "வாழ்க்கை motivation tamil speech",
-    "tamil motivation never give up",
-    "பெண்கள் சாதனை tamil",                 # women's achievement
-    "women in engineering tamil",
-    "corona positive வாழ்க்கை tamil",       # covid encouragement
-    "tamil students motivation exam",
-    "சமத்துவம் பேச்சு tamil",               # equality speech
-    "vazhkai nambikkai tamil",              # romanized: life hope
-    "tamil inspirational speech",
+    # original domains, deeper in Tamil
+    "நம்பிக்கை பேச்சு",
+    "வாழ்க்கை அறிவுரை",
+    "தன்னம்பிக்கை பேச்சு",
+    "மாணவர்கள் ஊக்கம் பேச்சு",
+    "வெற்றி பெற வழிகள் தமிழ்",
+    "பெண்கள் முன்னேற்றம் பேச்சு",
+    "பெண் தொழில்முனைவோர் தமிழ்",
+    "கொரோனா நேர்மறை தமிழ்",
+    "தோல்வியில் இருந்து வெற்றி தமிழ்",
+    "மனநலம் ஆலோசனை தமிழ்",
+    # romanized-audience queries (comments skew romanized Tamil)
+    "thannambikkai speech tamil",
+    "vetri nichayam motivation",
+    "tamil comedy vlog",
+    "tamil village vlog",
+    "chennai vlog tamil",
+    "tamil cinema review latest",
+    "tamil serial today episode review",
+    "tamil songs whatsapp status",
+    "anna university exam tamil",
+    "tamil news pesu",
 ]
 
 

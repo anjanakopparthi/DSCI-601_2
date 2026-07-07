@@ -43,6 +43,8 @@ TIMESTAMP_RE = re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\b")   # video timestamps
 
 TAMIL_CHAR_RE = re.compile(r"[\u0B80-\u0BFF]")
 LETTER_RE = re.compile(r"[^\W\d_]", re.UNICODE)
+TAMIL_SUFFIX_RE = re.compile(
+    r"(nga|ngal|inga|unga|uchu|ichu|udhu|athu|adhu|kittu|itten|iruken)$")
 
 # Frequent romanized-Tamil tokens (function words + very common words that are
 # unambiguous vs English). Two or more hits => romanized Tamil.
@@ -60,6 +62,25 @@ ROMANIZED_LEXICON = {
     "da", "dei", "bro", "machan", "machi", "sir", "ji", "saar",
     "super", "superb", "nalla", "nallavan", "azhaga", "alaga",
     "kashtam", "kastam", "sandhosham", "santhosham", "magizhchi",
+    # round 2: mined from the dropped-'other' sample
+    "edhu", "ethu", "adhu", "idhu", "theriyum", "therihum", "theriyadha",
+    "therila", "therilla", "teriyum", "pattha", "paakkala", "pakkala",
+    "udane", "udanea", "avalo", "evalo", "evlo", "ivlo", "ippo", "ipo",
+    "apram", "appuram", "apdi", "ipdi", "appadi", "ippadi", "epdi",
+    "yaen", "yen", "yenda", "engada", "thozha", "machaan", "ayyo",
+    "aiyo", "aiyoo", "yappa", "podu", "podunga", "pannu", "panalum",
+    "pannalam", "poren", "pora", "povaen", "pova", "polam", "polama",
+    "mudila", "mudiyala", "mudingada", "ayiduchu", "aachu", "aayiduchu",
+    "varaikum", "vanthu", "vanga", "vaanga", "vanka", "pakkam",
+    "mattum", "matum", "innum", "avan", "aval", "avar", "ivan",
+    "veetla", "veedu", "irunthu", "irundhu", "iruka", "irukinga",
+    "irukke", "irruku", "irukum", "irukkum", "makkal", "makkalukku",
+    "varusham", "varushame", "manikku", "kelvi", "sami", "saami",
+    "mamiyar", "purushan", "pondatti", "thangachi", "thambi",
+    "samathuva", "arasiyal", "padikanum", "padichen", "padicha",
+    "sollanum", "solranga", "soldringa", "sonna", "sonnanga",
+    "kudukalam", "kuduthanga", "vangi", "sapdunga", "sapduga",
+    "saptiya", "thoonga", "thookam", "yosanai", "nenachu", "nenaikiren",
 }
 # "da","bro","sir","super" alone are weak -> require >= 2 distinct hits
 WEAK_TOKENS = {"da", "bro", "sir", "ji", "super", "superb", "mass", "level"}
@@ -96,8 +117,12 @@ def classify(text: str) -> str:
     if not tokens:
         return "other"
     hits = {t for t in tokens if t in ROMANIZED_LEXICON}
-    strong_hits = hits - WEAK_TOKENS
-    if len(hits) >= 2 and strong_hits:
+    # morphology booster: word endings that are distinctly Tamil
+    # (verb/plural/politeness suffixes rare in English/Hindi)
+    pattern_hits = {t for t in tokens if len(t) >= 5 and
+                    TAMIL_SUFFIX_RE.search(t)}
+    strong_hits = (hits - WEAK_TOKENS) | pattern_hits
+    if len(hits | pattern_hits) >= 2 and strong_hits:
         return "romanized"
 
     stop_ratio = sum(t in ENGLISH_STOPWORDS for t in tokens) / len(tokens)
@@ -120,6 +145,7 @@ def main():
     print(f"Raw comments:        {len(rows)}")
 
     seen, kept, counts = set(), [], Counter()
+    dropped_other = []
     for row in rows:
         text = clean_text(row["text"])
         if not text or len(text) > args.max_chars:
@@ -138,6 +164,8 @@ def main():
         counts[kind] += 1
         if kind in ("native", "mixed", "romanized"):
             kept.append({"text": text, "kind": kind})
+        elif kind == "other":
+            dropped_other.append(text)
 
     with OUT_PATH.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["text", "kind"])
@@ -154,6 +182,16 @@ def main():
     print(f"  other (dropped):   {counts['other']}")
     print(f"\nKept for corpus:     {len(kept)}")
     print(f"Saved -> {OUT_PATH}")
+
+    # sample of the 'other' bucket for manual inspection — if these look like
+    # romanized Tamil, the lexicon needs more words
+    if dropped_other:
+        import random
+        random.seed(0)
+        sample = random.sample(dropped_other, min(60, len(dropped_other)))
+        sample_path = OUT_PATH.parent / "dropped_other_sample.txt"
+        sample_path.write_text("\n".join(sample), encoding="utf-8")
+        print(f"Sample of dropped 'other' rows -> {sample_path}")
 
 
 if __name__ == "__main__":
