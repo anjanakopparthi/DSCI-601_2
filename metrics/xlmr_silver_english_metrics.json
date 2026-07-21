@@ -1,0 +1,76 @@
+{
+  "language": "english",
+  "model": "xlm-roberta-base",
+  "hyperparams": {
+    "max_len": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "lr": 2e-05,
+    "seed": 42
+  },
+  "dev": {
+    "loss": 0.4139,
+    "accuracy": 0.8843,
+    "macro_f1": 0.8704,
+    "weighted_f1": 0.8846,
+    "hope_f1": 0.9129,
+    "hope_precision": 0.9173,
+    "hope_recall": 0.9084
+  },
+  "test": {
+    "loss": 0.4051,
+    "accuracy": 0.8874,
+    "macro_f1": 0.8735,
+    "weighted_f1": 0.8874,
+    "hope_f1": 0.9154,
+    "hope_precision": 0.9167,
+    "hope_recall": 0.9141,
+    "runtime": 4.415,
+    "samples_per_second": 593.208,
+    "steps_per_second": 9.287,
+    "confusion_matrix": [
+      [
+        728,
+        145
+      ],
+      [
+        150,
+        1596
+      ]
+    ]
+  },
+  "cross_evaluation": {
+    "silver_trained__silver_test": {
+      "loss": 0.4051,
+      "accuracy": 0.8874,
+      "macro_f1": 0.8735,
+      "weighted_f1": 0.8874,
+      "hope_f1": 0.9154,
+      "hope_precision": 0.9167,
+      "hope_recall": 0.9141,
+      "runtime": 4.415,
+      "samples_per_second": 593.208,
+      "steps_per_second": 9.287,
+      "confusion_matrix": [
+        [
+          728,
+          145
+        ],
+        [
+          150,
+          1596
+        ]
+      ]
+    },
+    "silver_trained__gold_test": {
+      "accuracy": 0.7467,
+      "macro_f1": 0.5886,
+      "hope_f1": 0.3336
+    },
+    "gold_trained__silver_test": {
+      "accuracy": 0.5682,
+      "macro_f1": 0.5681,
+      "hope_f1": 0.5658
+    }
+  }
+}

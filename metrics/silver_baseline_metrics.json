@@ -1,0 +1,224 @@
+{
+  "english": {
+    "gold_trained__gold_test": {
+      "accuracy": 0.8622,
+      "macro_f1": 0.7065,
+      "weighted_f1": 0.8824,
+      "hope_f1": 0.4928,
+      "hope_precision": 0.3656,
+      "hope_recall": 0.756,
+      "confusion_matrix": [
+        [
+          2245,
+          328
+        ],
+        [
+          61,
+          189
+        ]
+      ]
+    },
+    "gold_trained__silver_test": {
+      "accuracy": 0.5575,
+      "macro_f1": 0.5574,
+      "weighted_f1": 0.5597,
+      "hope_f1": 0.5644,
+      "hope_precision": 0.8208,
+      "hope_recall": 0.4301,
+      "confusion_matrix": [
+        [
+          709,
+          164
+        ],
+        [
+          995,
+          751
+        ]
+      ]
+    },
+    "silver_trained__gold_test": {
+      "accuracy": 0.762,
+      "macro_f1": 0.5917,
+      "weighted_f1": 0.8087,
+      "hope_f1": 0.328,
+      "hope_precision": 0.2187,
+      "hope_recall": 0.656,
+      "confusion_matrix": [
+        [
+          1987,
+          586
+        ],
+        [
+          86,
+          164
+        ]
+      ]
+    },
+    "silver_trained__silver_test": {
+      "accuracy": 0.8045,
+      "macro_f1": 0.7941,
+      "weighted_f1": 0.8095,
+      "hope_f1": 0.8404,
+      "hope_precision": 0.922,
+      "hope_recall": 0.7721,
+      "confusion_matrix": [
+        [
+          759,
+          114
+        ],
+        [
+          398,
+          1348
+        ]
+      ]
+    }
+  },
+  "tamil": {
+    "gold_trained__gold_test": {
+      "accuracy": 0.633,
+      "macro_f1": 0.6296,
+      "weighted_f1": 0.6323,
+      "hope_f1": 0.5943,
+      "hope_precision": 0.607,
+      "hope_recall": 0.5822,
+      "confusion_matrix": [
+        [
+          638,
+          305
+        ],
+        [
+          338,
+          471
+        ]
+      ]
+    },
+    "gold_trained__silver_test": {
+      "accuracy": 0.6769,
+      "macro_f1": 0.6557,
+      "weighted_f1": 0.681,
+      "hope_f1": 0.7412,
+      "hope_precision": 0.7703,
+      "hope_recall": 0.7143,
+      "confusion_matrix": [
+        [
+          264,
+          170
+        ],
+        [
+          228,
+          570
+        ]
+      ]
+    },
+    "silver_trained__gold_test": {
+      "accuracy": 0.5765,
+      "macro_f1": 0.5599,
+      "weighted_f1": 0.5664,
+      "hope_f1": 0.4745,
+      "hope_precision": 0.5556,
+      "hope_recall": 0.4141,
+      "confusion_matrix": [
+        [
+          675,
+          268
+        ],
+        [
+          474,
+          335
+        ]
+      ]
+    },
+    "silver_trained__silver_test": {
+      "accuracy": 0.789,
+      "macro_f1": 0.7802,
+      "weighted_f1": 0.7932,
+      "hope_f1": 0.8241,
+      "hope_precision": 0.8956,
+      "hope_recall": 0.7632,
+      "confusion_matrix": [
+        [
+          363,
+          71
+        ],
+        [
+          189,
+          609
+        ]
+      ]
+    }
+  },
+  "malayalam": {
+    "gold_trained__gold_test": {
+      "accuracy": 0.829,
+      "macro_f1": 0.7635,
+      "weighted_f1": 0.8382,
+      "hope_f1": 0.6389,
+      "hope_precision": 0.553,
+      "hope_recall": 0.7565,
+      "confusion_matrix": [
+        [
+          654,
+          118
+        ],
+        [
+          47,
+          146
+        ]
+      ]
+    },
+    "gold_trained__silver_test": {
+      "accuracy": 0.5923,
+      "macro_f1": 0.5909,
+      "weighted_f1": 0.5861,
+      "hope_f1": 0.5667,
+      "hope_precision": 0.7782,
+      "hope_recall": 0.4456,
+      "confusion_matrix": [
+        [
+          270,
+          63
+        ],
+        [
+          275,
+          221
+        ]
+      ]
+    },
+    "silver_trained__gold_test": {
+      "accuracy": 0.7534,
+      "macro_f1": 0.6552,
+      "weighted_f1": 0.7656,
+      "hope_f1": 0.4711,
+      "hope_precision": 0.4125,
+      "hope_recall": 0.5492,
+      "confusion_matrix": [
+        [
+          621,
+          151
+        ],
+        [
+          87,
+          106
+        ]
+      ]
+    },
+    "silver_trained__silver_test": {
+      "accuracy": 0.7334,
+      "macro_f1": 0.7299,
+      "weighted_f1": 0.736,
+      "hope_f1": 0.7606,
+      "hope_precision": 0.822,
+      "hope_recall": 0.7077,
+      "confusion_matrix": [
+        [
+          257,
+          76
+        ],
+        [
+          145,
+          351
+        ]
+      ]
+    }
+  }
+}

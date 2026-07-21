@@ -1,0 +1,76 @@
+{
+  "language": "malayalam",
+  "model": "xlm-roberta-base",
+  "hyperparams": {
+    "max_len": 128,
+    "batch_size": 16,
+    "epochs": 4,
+    "lr": 2e-05,
+    "seed": 42
+  },
+  "dev": {
+    "loss": 0.44,
+    "accuracy": 0.843,
+    "macro_f1": 0.8359,
+    "weighted_f1": 0.8427,
+    "hope_f1": 0.87,
+    "hope_precision": 0.8631,
+    "hope_recall": 0.877
+  },
+  "test": {
+    "loss": 0.346,
+    "accuracy": 0.8697,
+    "macro_f1": 0.8653,
+    "weighted_f1": 0.8701,
+    "hope_f1": 0.8898,
+    "hope_precision": 0.9008,
+    "hope_recall": 0.879,
+    "runtime": 1.2543,
+    "samples_per_second": 660.931,
+    "steps_per_second": 10.364,
+    "confusion_matrix": [
+      [
+        285,
+        48
+      ],
+      [
+        60,
+        436
+      ]
+    ]
+  },
+  "cross_evaluation": {
+    "silver_trained__silver_test": {
+      "loss": 0.346,
+      "accuracy": 0.8697,
+      "macro_f1": 0.8653,
+      "weighted_f1": 0.8701,
+      "hope_f1": 0.8898,
+      "hope_precision": 0.9008,
+      "hope_recall": 0.879,
+      "runtime": 1.2543,
+      "samples_per_second": 660.931,
+      "steps_per_second": 10.364,
+      "confusion_matrix": [
+        [
+          285,
+          48
+        ],
+        [
+          60,
+          436
+        ]
+      ]
+    },
+    "silver_trained__gold_test": {
+      "accuracy": 0.8083,
+      "macro_f1": 0.714,
+      "hope_f1": 0.5499
+    },
+    "gold_trained__silver_test": {
+      "accuracy": 0.684,
+      "macro_f1": 0.6821,
+      "hope_f1": 0.7063
+    }
+  }
+}
