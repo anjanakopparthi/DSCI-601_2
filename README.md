@@ -1,40 +1,99 @@
 # Multilingual Hope Speech Detection
 
-**A comprehensive system for detecting hope speech across English, Tamil, and Malayalam languages**
+**Hope speech detection for English, Tamil, and Malayalam — and an investigation of the benchmark's label quality with an LLM-labeled silver-standard re-annotation**
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository implements a complete multilingual hope speech detection pipeline supporting English, Tamil, and Malayalam with native script, romanized text, and code-mixed content processing.
+Binary hope speech classification (`0 = Non_hope_speech`, `1 = Hope_speech`) on
+the HopeEDI dataset (LT-EDI shared task), covering native script, romanized,
+and code-mixed text. DSCI-601 capstone project.
 
 ---
 
 ## Table of Contents
 
-- [Features](#features)
+- [Project Overview](#project-overview)
+- [Results](#results)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Dataset](#dataset)
-- [Quick Start](#quick-start)
-- [Preprocessing Pipeline](#preprocessing-pipeline)
-- [Model Training](#model-training)
+- [Quick Start — Gold Track](#quick-start--gold-track)
+- [Silver Track — Data Collection & LLM Labeling](#silver-track--data-collection--llm-labeling)
+- [Transformer Fine-tuning (Colab)](#transformer-fine-tuning-colab)
 - [Testing](#testing)
-- [Results](#results)
 - [Documentation](#documentation)
+- [Ethics & Data Notes](#ethics--data-notes)
 - [License](#license)
+- [Citation](#citation)
 
 ---
 
-## Features
+## Project Overview
 
-- **Multilingual Support**: English, Tamil, and Malayalam
-- **Comprehensive Preprocessing**: Text cleaning, normalization, and label encoding
-- **Script Handling**: Native scripts, romanized text, and code-mixed content
-- **Baseline Models**: TF-IDF + Logistic Regression for each language
-- **Rule-Based Enhancement**: Pattern-based prediction overrides for improved accuracy
-- **Automated Testing**: Comprehensive pytest suite for all components
-- **Complete Documentation**: Sphinx-generated HTML documentation with Google-style docstrings
-- **Inference Ready**: Saved `.pkl` models for deployment
+The project has three phases:
+
+**Phase 1 — Gold pipeline.** A rebuilt binary preprocessing / training /
+evaluation pipeline (not-in-language rows removed, transformer-friendly
+cleaning, deduplication, 92-test suite), a TF-IDF + Logistic Regression
+baseline, then fine-tuned **XLM-R**, **MuRIL**, and **MuRIL + domain-adaptive
+pretraining (DAPT)** on 12k scraped in-domain Tamil comments.
+
+**Phase 2 — Label-quality investigation.** LLM labeling was validated against
+gold *before* use. Agreement tracked each subset's known annotation quality —
+Malayalam **0.855**, English **0.782** (few-shot), Tamil **0.545** (κ = 0.09) —
+and a manual audit of Tamil disagreements found gold `Hope_speech` labels on
+insults, jokes, and neutral questions, explaining the ~0.63 macro-F1 ceiling
+that every gold-trained model converges to.
+
+**Phase 3 — Silver track.** 46,875 topic-matched YouTube comments collected
+via the official Data API (anonymized at collection), filtered per language
+(script detection + romanized-Tamil / Manglish lexicons), labeled with the
+validated setup (`gemini-3.1-flash-lite` + 30 gold few-shot examples;
+**90/100 human-verified accuracy** on an audited random English sample),
+split with gold-contamination control, and used to retrain both model
+families for a full gold-vs-silver cross-evaluation.
+
+---
+
+## Results
+
+**Gold benchmark (test macro F1):**
+
+| Language  | Baseline | XLM-R     | MuRIL     | MuRIL+DAPT |
+|-----------|----------|-----------|-----------|------------|
+| English   | 0.707    | **0.768** | —         | —          |
+| Tamil     | 0.630    | 0.614     | 0.635     | **0.642**  |
+| Malayalam | 0.763    | 0.777     | **0.818** | —          |
+
+**Gold-vs-silver cross-evaluation (XLM-R, macro F1; rows = training labels,
+columns = evaluation labels):**
+
+| Language  | gold→gold | gold→silver | silver→gold | silver→silver |
+|-----------|-----------|-------------|-------------|---------------|
+| English   | 0.768     | 0.568       | 0.589       | **0.874**     |
+| Tamil     | 0.614     | **0.752**   | 0.583       | **0.841**     |
+| Malayalam | 0.777     | 0.682       | 0.714       | **0.865**     |
+
+Key findings:
+
+1. **Transformers win where pretraining matches the text** (XLM-R on English;
+   MuRIL on code-mixed Dravidian text); DAPT on scraped in-domain data adds a
+   further Tamil gain. Hand-crafted rule overrides are inert (≤13 predictions
+   changed per split).
+2. **Tamil's gold labels are the bottleneck, not the models**: LLM–gold
+   agreement is near chance (κ = 0.09), audited gold errors are unambiguous,
+   and the *gold-trained* Tamil XLM-R agrees more with the silver labels
+   (0.752) than with its own gold test set (0.614).
+3. **LLM labels are a far more consistent target**: identical architectures
+   reach 0.84–0.87 macro F1 on silver versus 0.61–0.78 on gold, with 90%
+   human-verified label accuracy.
+4. Cross-standard transfer gaps mirror per-language gold quality (smallest
+   for Malayalam, largest for Tamil).
+
+Full tables: [`metrics/model_comparison.md`](metrics/model_comparison.md),
+[`metrics/cross_evaluation_report.md`](metrics/cross_evaluation_report.md),
+audit record: [`metrics/human_audit.json`](metrics/human_audit.json).
 
 ---
 
@@ -42,713 +101,219 @@ This repository implements a complete multilingual hope speech detection pipelin
 
 ```
 DSCI-601_2/
-├── initial_data/                   # Raw datasets
-│   ├── english_hope_train.csv
-│   ├── english_hope_dev.csv
-│   ├── english_hope_test.csv
-│   ├── tamil_hope_first_train.csv
-│   ├── tamil_hope_first_dev.csv
-│   ├── tamil_hope_first_test.csv
-│   ├── malayalam_train.csv
-│   ├── malayalam_dev.csv
-│   └── malayalam_test.csv
-│
-├── preprocess/                     # Preprocessing module
-│   └── preprocess_all_sphinx.py   # Main preprocessing script
-│
-├── training/                       # Training module
-│   └── train_all_sphinx.py        # Main training script
-│
-├── models/                         # Saved trained models (generated)
-│   ├── hope_english_model.pkl
-│   ├── hope_tamil_model.pkl
-│   ├── hope_malayalam_model.pkl
-│   ├── hope_english_model_with_rules.pkl
-│   ├── hope_tamil_model_with_rules.pkl
-│   └── hope_malayalam_model_with_rules.pkl
-│
-├── processed/                      # Processed datasets (generated)
-│   ├── english_train_processed.csv
-│   ├── english_dev_processed.csv
-│   ├── english_test_processed.csv
-│   ├── tamil_train_processed.csv
-│   ├── tamil_dev_processed.csv
-│   ├── tamil_test_processed.csv
-│   ├── malayalam_train_processed.csv
-│   ├── malayalam_dev_processed.csv
-│   └── malayalam_test_processed.csv
-│
-├── tests/                          # Test suite
-│   ├── pytestEnglish.py           # English model tests
-│   ├── pytestTamil.py             # Tamil model tests
-│   └── pytestMalayalam.py         # Malayalam model tests
-│
-├── docs/                           # Sphinx documentation
-│   ├── source/
-│   │   ├── conf.py                # Sphinx configuration
-│   │   └── index.rst              # Documentation source
-│   └── build/html/                # Generated HTML docs
-│       └── index.html             # Main documentation page
-│
-├── config.json                     # Configuration file
-├── requirements.txt                # Python dependencies
-└── README.md                       # This file
+├── initial_data/          # Raw HopeEDI CSVs (semicolon format)
+├── preprocess/
+│   └── preprocess_all.py  # parse, clean, binarize, dedupe
+├── training/
+│   ├── train_all.py               # gold TF-IDF baseline (+ rules variants)
+│   └── train_silver_baseline.py   # silver baseline + 2x2 cross-eval
+├── evaluation/
+│   ├── evaluate.py                # unified model evaluation
+│   ├── predict.py                 # live 0/1 prediction demo
+│   ├── compare_models.py          # gold-benchmark model table
+│   └── cross_eval_report.py       # final gold-vs-silver matrices
+├── data_collection/
+│   ├── fetch_comments.py          # YouTube Data API collector (--lang)
+│   ├── filter_corpus.py           # language filtering + cleaning
+│   ├── llm_label_validate.py      # LLM-vs-gold agreement validation
+│   ├── llm_label_corpus.py        # resumable batch labeling
+│   └── build_silver_datasets.py   # contamination-controlled splits
+├── notebooks/             # Colab: xlmr_finetune, muril_finetune,
+│                          #        muril_dapt_tamil, xlmr_silver_crosseval
+├── tests/                 # pytest suite (92 tests)
+├── metrics/               # all metrics JSONs, report tables, human audit
+├── docs/                  # Sphinx documentation
+├── archive/               # previous-semester scripts (reference)
+├── config.json            # paths, label maps, hyperparameters, rule patterns
+├── requirements.txt
+└── README.md
 ```
+
+Generated data (`processed/`, `processed_silver/`, `models/`,
+`data_collection/collected/`) is gitignored and reproducible. Raw scraped
+comments are never committed. API keys live in a local `.env` (gitignored).
 
 ---
 
 ## Installation
 
-### Prerequisites
-
-- Python 3.8 or higher
-- pip package manager
-
-### Step 1: Clone the Repository
-
 ```bash
 git clone https://github.com/anjanakopparthi/DSCI-601_2.git
 cd DSCI-601_2
-```
-
-### Step 2: Install Dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### Required Packages
-
-See `requirements.txt` for complete list. Key dependencies:
-
-```
-pandas>=1.5.0
-numpy>=1.23.0
-scikit-learn>=1.2.0
-joblib>=1.2.0
-pytest>=7.2.0
-sphinx>=8.0.0
-sphinx-rtd-theme>=2.0.0
-```
+Key dependencies: `pandas`, `scikit-learn`, `joblib`, `requests`, `pytest`,
+`sphinx` (see `requirements.txt`). Transformer training additionally uses
+`transformers`, `datasets`, `accelerate` (installed inside the Colab
+notebooks).
 
 ---
 
 ## Dataset
 
-### Dataset Information
+**Source:** [HopeEDI](https://github.com/bharathichezhiyan/HopeEDI)
+(Chakravarthi, 2020) — YouTube comments labeled `Hope_speech`,
+`Non_hope_speech`, or `not-<language>`. Raw files are included in
+`initial_data/`.
 
-This project uses the **Hope Speech Detection** dataset containing labeled text samples:
-
-- **English**: 6,000+ samples
-- **Tamil**: 5,000+ samples  
-- **Malayalam**: 4,500+ samples
-
-### Label Definitions
-
-| Label | Class | Description |
-|-------|-------|-------------|
-| 0 | Non_hope_speech | Comments without hopeful or encouraging content |
-| 1 | Hope_speech | Comments expressing hope, encouragement, or positivity |
-| 2 | not-English/not-Tamil/not-Malayalam | Comments not in target language (filtered during training) |
-
-### Data Format
-
-**Raw CSV format** (semicolon-delimited):
+**Raw format** (semicolon-delimited single column):
 ```
 text content;Hope_speech;
 another text;Non_hope_speech;
-not in language;not-English;
 ```
 
-**Processed format** (after preprocessing):
+**Processed format** (binary; not-in-language rows deleted):
 ```csv
 text,label_str,label
 "i have hope for tomorrow",Hope_speech,1
 "this situation is terrible",Non_hope_speech,0
 ```
 
-### Dataset Access
+**Split sizes after preprocessing (gold):**
 
-**Source**: [HopeEDI Dataset](https://github.com/bharathichezhiyan/HopeEDI)
+| Language  | Train  | Dev   | Test  | Hope% |
+|-----------|--------|-------|-------|-------|
+| English   | 21,810 | 2,818 | 2,823 |  8.7% |
+| Tamil     | 13,954 | 1,751 | 1,752 | 44.3% |
+| Malayalam |  7,661 |   970 |   965 | 19.5% |
 
-The dataset is already included in the `initial_data/` folder of this repository.
+**Silver datasets** (LLM-labeled scraped comments, built by Phase 3):
 
----
-
-## Quick Start
-
-### Complete Pipeline (All Languages)
-
-```bash
-# 1. Preprocess all datasets
-python preprocess/preprocess_all_sphinx.py
-
-# 2. Train all models
-python training/train_all_sphinx.py
-
-# 3. Run all tests
-pytest tests/ -v
-```
-
-### Individual Language Processing
-
-**English:**
-```bash
-python preprocess/preprocess_all_sphinx.py  # Processes English
-python training/train_all_sphinx.py         # Trains English model
-pytest tests/pytestEnglish.py -v            # Tests English
-```
-
-**Tamil:**
-```bash
-python preprocess/preprocess_all_sphinx.py  # Processes Tamil
-python training/train_all_sphinx.py         # Trains Tamil model
-pytest tests/pytestTamil.py -v              # Tests Tamil
-```
-
-**Malayalam:**
-```bash
-python preprocess/preprocess_all_sphinx.py  # Processes Malayalam
-python training/train_all_sphinx.py         # Trains Malayalam model
-pytest tests/pytestMalayalam.py -v          # Tests Malayalam
-```
-
-### Expected Runtime
-
-- Preprocessing: ~2-5 minutes (all languages)
-- Training: ~5-10 minutes per language
-- Testing: ~1-2 minutes (all tests)
+| Language  | Train  | Dev   | Test  | Hope% |
+|-----------|--------|-------|-------|-------|
+| English   | 20,949 | 2,619 | 2,619 | 66.7% |
+| Tamil     |  9,855 | 1,232 | 1,232 | 64.7% |
+| Malayalam |  6,627 |   828 |   829 | 59.8% |
 
 ---
 
-## Preprocessing Pipeline
+## Quick Start — Gold Track
 
-### Configuration
-
-The `config.json` file controls all preprocessing settings:
-
-```json
-{
-  "initial_data_dir": "initial_data",
-  "processed_dir": "processed",
-  "models_dir": "models",
-  "languages": {
-    "english": {
-      "train_file": "english_hope_train.csv",
-      "dev_file": "english_hope_dev.csv",
-      "test_file": "english_hope_test.csv",
-      "label_map": {
-        "Non_hope_speech": 0,
-        "Hope_speech": 1,
-        "not-English": 2
-      },
-      "single_column_semicolon": true,
-      "negation": {
-        "enabled": false
-      }
-    }
-  }
-}
-```
-
-### Preprocessing Steps
-
-1. **Text Cleaning**
-   - Remove URLs (http://, https://, www.)
-   - Remove social media artifacts (@mentions, #hashtags)
-   - Normalize whitespace (collapse multiple spaces)
-   - Preserve Unicode scripts for Tamil/Malayalam
-   - Case normalization (English only)
-
-2. **Label Encoding**
-   - Convert string labels to numeric (0/1)
-   - Filter out "not-in-language" samples (label 2)
-   - Apply label mapping from config
-
-3. **Negation Handling** (Tamil only)
-   - Detect negation patterns near hope keywords
-   - Pattern: "நம்பிக்கை" (hope) + "இல்லை" (no)
-   - Relabel Hope_speech → Non_hope_speech when negation detected
-   - Applied only to training data
-
-4. **Output Generation**
-   - Save processed CSV files with three columns:
-     - `text`: Cleaned text
-     - `label_str`: Original label string
-     - `label`: Numeric label (0 or 1)
-
-### Running Preprocessing
+All scripts resolve paths relative to the repository root and run from any
+working directory:
 
 ```bash
-python preprocess/preprocess_all_sphinx.py
+python preprocess/preprocess_all.py     # raw CSVs -> processed/
+python training/train_all.py            # baselines -> models/, metrics/
+python evaluation/evaluate.py           # evaluate saved models (--lang, --split)
+python evaluation/predict.py tamil      # live demo (--interactive)
+python evaluation/compare_models.py     # benchmark comparison table
 ```
 
-**Expected Output:**
-```
-============================================================
-Processing language: ENGLISH
-============================================================
+Runtime: preprocessing ~1 min, baseline training ~3 min, evaluation seconds.
 
-=== ENGLISH — train ===
-Input:  initial_data/english_hope_train.csv
-Output: processed/english_train_processed.csv
-  Original shape: (5000, 2)
-  Raw label_str distribution:
-Hope_speech        2834
-Non_hope_speech    2100
-not-English          66
+---
 
-  Negation rule: 0 rows relabeled (not enabled)
-  Shape after cleaning: (4523, 3)
-  Numeric label distribution:
-1    2834
-0    1689
+## Silver Track — Data Collection & LLM Labeling
 
-  ✓ Saved to processed/english_train_processed.csv
+Requires `YOUTUBE_API_KEY` and `GEMINI_API_KEY` in a repo-root `.env`
+(both free tier).
+
+```bash
+# 1. Collect comments (official Data API; quota-aware, resumable)
+python data_collection/fetch_comments.py --lang english   # + tamil, malayalam
+
+# 2. Filter to the target language (script + romanized lexicons)
+python data_collection/filter_corpus.py --lang english
+
+# 3. Validate the LLM labeler against gold BEFORE trusting it
+python data_collection/llm_label_validate.py --lang english --few-shot 30
+
+# 4. Batch-label the corpus (resumable across quota days)
+python data_collection/llm_label_corpus.py --lang english
+
+# 5. Build contamination-controlled silver splits
+python data_collection/build_silver_datasets.py
+
+# 6. Train + cross-evaluate the silver baseline (2x2 matrix)
+python training/train_silver_baseline.py
+
+# 7. Aggregate all matrices into the final report
+python evaluation/cross_eval_report.py
 ```
 
 ---
 
-## Model Training
+## Transformer Fine-tuning (Colab)
 
-### Model Architecture
+The notebooks in `notebooks/` run on a free Colab T4 GPU. They read
+`processed/` and `processed_silver/` from Google Drive at
+`MyDrive/hope_speech/` and write models + metrics JSONs back to Drive
+(copy the metrics into `metrics/` afterwards):
 
-Each baseline model uses:
-- **TF-IDF Vectorizer**: 
-  - 1-3 n-grams (unigrams, bigrams, trigrams)
-  - 5000 max features
-  - Captures local text patterns
-- **Logistic Regression**: 
-  - Balanced class weights
-  - L2 regularization
-  - Maximum 500 iterations
+| Notebook | Purpose | ~Time/lang |
+|---|---|---|
+| `xlmr_finetune.ipynb` | XLM-R on gold data | 15–45 min |
+| `muril_finetune.ipynb` | MuRIL on gold data (Tamil/Malayalam) | 25–40 min |
+| `muril_dapt_tamil.ipynb` | MLM domain-adaptive pretraining + fine-tune | 60 min |
+| `xlmr_silver_crosseval.ipynb` | XLM-R on silver + built-in 2×2 cross-eval | 20–50 min |
 
-### Training Configuration
-
-Configured in `config.json`:
-
-```json
-{
-  "training": {
-    "balance_method": "undersample",
-    "tfidf_params": {
-      "max_features": 5000,
-      "ngram_range": [1, 3]
-    },
-    "lr_params": {
-      "max_iter": 500,
-      "class_weight": "balanced",
-      "n_jobs": -1
-    }
-  }
-}
-```
-
-### Training Process
-
-1. **Data Loading**: Load processed CSV files from `processed/`
-2. **Class Balancing**: 
-   - Undersample majority class to match minority
-   - Alternative: oversample minority to match majority
-3. **Train/Dev Split**: 
-   - Use provided dev set (if available)
-   - Otherwise split 20% from training data
-4. **Model Training**: 
-   - Fit TF-IDF + Logistic Regression pipeline
-   - Use balanced class weights
-5. **Evaluation**: 
-   - Report metrics on dev and test sets
-   - Print classification report with precision/recall/F1
-6. **Model Saving**: 
-   - Base model: `hope_{language}_model.pkl`
-   - Rule-enhanced model: `hope_{language}_model_with_rules.pkl`
-
-### Rule-Based Enhancement
-
-The system supports optional rule-based overrides defined in `config.json`:
-
-**English Example:**
-```json
-"rule_patterns": {
-  "positive": [
-    "there is hope",
-    "i have hope",
-    "never lose hope",
-    "better days are coming"
-  ],
-  "negative": [
-    "no hope",
-    "hopeless",
-    "without hope"
-  ]
-}
-```
-
-Rules override model predictions:
-- Text matching **positive patterns** → Hope_speech (1)
-- Text matching **negative patterns** → Non_hope_speech (0)
-- Positive patterns take precedence
-
-### Running Training
-
-```bash
-python training/train_all_sphinx.py
-```
-
-**Expected Output:**
-```
-============================================================
-HOPE SPEECH BASELINE MODEL TRAINING
-============================================================
-
-Configuration:
-  Processed data dir: processed
-  Models output dir:  models
-  Balance method:     undersample
-  TF-IDF params:      {'max_features': 5000, 'ngram_range': (1, 3)}
-  LogReg params:      {'max_iter': 500, 'class_weight': 'balanced', 'n_jobs': -1}
-
-============================================================
-Training ENGLISH Model
-============================================================
-
-Loading data:
-  Train: processed/english_train_processed.csv
-  Dev:   processed/english_dev_processed.csv
-  Test:  processed/english_test_processed.csv
-
-Original distribution:
-  Non_hope_speech (0): 1689
-  Hope_speech (1):     2834
-
-Balanced distribution (undersample):
-1    1689
-0    1689
-
-Training model...
-✓ Model trained!
-
-Validation Results:
-              precision    recall  f1-score   support
-           0      0.850     0.920     0.884       100
-           1      0.900     0.810     0.852        90
-
-    accuracy                          0.868       190
-
-✓ Model saved to: models/hope_english_model.pkl
-✓ Rule-based patterns loaded:
-  Positive patterns: 12
-  Negative patterns: 8
-✓ Rule-based model saved to: models/hope_english_model_with_rules.pkl
-
-============================================================
-✓ ENGLISH training complete!
-============================================================
-```
+All use class-weighted loss, fp16, early stopping, and best-epoch selection
+by dev macro F1.
 
 ---
 
 ## Testing
 
-### Test Suite Overview
-
-Comprehensive pytest suite covering:
-- Data cleaning and filtering
-- Class balancing (undersampling/oversampling)
-- Model pipeline building
-- Rule-based predictions
-- Unicode handling for Tamil/Malayalam
-- Edge cases and error handling
-
-### Running All Tests
-
 ```bash
-# Run all tests with verbose output
-pytest tests/ -v
-
-# Run with summary
-pytest tests/
-
-# Run specific language tests
-pytest tests/pytestEnglish.py -v
-pytest tests/pytestTamil.py -v
-pytest tests/pytestMalayalam.py -v
+python -m pytest tests/ -v      # expect: 92 passed
 ```
 
-### Test Categories
-
-**1. Data Cleaning Tests**
-- Empty text removal
-- Label filtering
-- Unicode preservation
-- Whitespace normalization
-
-**2. Balancing Tests**
-- Undersampling validation
-- Oversampling validation
-- Edge cases (zero samples, imbalanced data)
-
-**3. Model Pipeline Tests**
-- Pipeline construction
-- TF-IDF parameter conversion
-- Model training and prediction
-
-**4. Rule-Based Tests**
-- Positive pattern matching
-- Negative pattern matching
-- Pattern precedence
-- Case-insensitive matching
-
-**5. Language-Specific Tests**
-
-**English:**
-- Negation detection ("no hope", "hopeless")
-- Toxic positivity patterns
-- Mixed case handling
-
-**Tamil:**
-- Script handling (Tamil Unicode U+0B80-0BFF)
-- Negation with inflections
-- Hope keyword detection
-
-**Malayalam:**
-- Script handling (Malayalam Unicode U+0D00-0D7F)
-- Mixed script (Malayalam + emoji)
-- Complex morphology
-
-### Example Test Output
-
-```bash
-$ pytest tests/pytestEnglish.py -v
-
-====================================== test session starts =======================================
-collected 15 items
-
-tests/pytestEnglish.py::test_clean_dataframe_filters_labels PASSED                        [  6%]
-tests/pytestEnglish.py::test_clean_dataframe_removes_empty_text PASSED                    [ 13%]
-tests/pytestEnglish.py::test_balance_train_data_undersample PASSED                        [ 20%]
-tests/pytestEnglish.py::test_balance_train_data_oversample PASSED                         [ 26%]
-tests/pytestEnglish.py::test_convert_ngram_range_list_to_tuple PASSED                     [ 33%]
-tests/pytestEnglish.py::test_build_model_default_params PASSED                            [ 40%]
-tests/pytestEnglish.py::test_rule_based_predictor_positive_pattern PASSED                 [ 46%]
-tests/pytestEnglish.py::test_rule_based_predictor_negative_pattern PASSED                 [ 53%]
-tests/pytestEnglish.py::test_rule_based_predictor_no_pattern_match PASSED                 [ 60%]
-tests/pytestEnglish.py::test_rule_based_predictor_case_insensitive PASSED                 [ 66%]
-tests/pytestEnglish.py::test_prepare_train_dev_split_with_dev PASSED                      [ 73%]
-tests/pytestEnglish.py::test_prepare_train_dev_split_without_dev PASSED                   [ 80%]
-tests/pytestEnglish.py::test_prepare_train_dev_split_small_dev PASSED                     [ 86%]
-
-====================================== 15 passed in 1.56s ================================================
-```
-
----
-
-## Results
-
-### English Baseline Model
-
-| Metric | Value |
-|--------|-------|
-| **Accuracy** | 80.4% |
-| **Weighted F1** | 0.84 |
-| **Non-Hope Precision** | 0.98 |
-| **Hope Precision** | 0.29 |
-
-**Analysis**: 
-- High precision for Non-Hope (98%) indicates few false positives
-- Low precision for Hope (29%) indicates many false positives
-- Model overpredicts Hope speech due to lexical overlap between classes
-- Class imbalance in original data affects performance
-
-**Key Insight**: Baseline TF-IDF model is **insufficient** for capturing nuanced hope speech semantics. This motivates transformer-based approaches (XLM-R, mBERT) which can:
-- Capture contextual dependencies
-- Handle negation better
-- Learn code-mixed patterns
-- Understand subtle prosocial semantics
-
-### Tamil Baseline Model
-
-| Metric | Value |
-|--------|-------|
-| **Accuracy** | 63.42% |
-| **Weighted Precision** | 63.31% |
-| **Weighted Recall** | 63.43% |
-| **Weighted F1** | 63.32% |
-| **Non-Hope F1** | 0.668 |
-| **Hope F1** | 0.592 |
-
-**Confusion Matrix**:
-- Non-Hope: 649/946 correctly identified (68.6%)
-- Hope: 468/815 correctly identified (57.4%)
-- 297 Non-Hope misclassified as Hope
-- 347 Hope misclassified as Non-Hope
-
-**Analysis**: 
-- Moderate balanced performance across both classes
-- Non-Hope detection slightly better than Hope
-- Negation rule improved Tamil performance
-- Still struggles with code-mixed Tamil-English text
-
-### Malayalam Baseline Model
-
-| Metric | Value |
-|--------|-------|
-| **Accuracy** | 30.28% |
-| **Weighted Precision** | 82.34% |
-| **Weighted Recall** | 30.28% |
-| **Weighted F1** | 0.38 |
-
-**Analysis**: 
-**Significantly worse** performance highlights major challenges:
-
-1. **Limited Training Data**: Insufficient Malayalam examples for TF-IDF
-2. **Morphological Complexity**: Rich morphology not captured by n-grams
-3. **Lexical Sparsity**: Limited vocabulary coverage
-4. **Class Imbalance**: Model overwhelmingly predicts majority class
-5. **Script Complexity**: Malayalam Unicode handling issues
-
-**Confusion Matrix**:
-- Only 73/101 Non-Hope correctly identified
-- 718 samples misclassified (majority class bias)
-- Deceptive high precision due to majority class prediction
-
-**Key Recommendation**: TF-IDF is **insufficient for Malayalam**. Requires:
-- Transformer-based contextual models (XLM-R)
-- More training data
-- Better morphological handling
-- Multilingual transfer learning
-
-### Performance Comparison
-
-```
-Language      Accuracy    F1-Hope    F1-NonHope    Status
---------      --------    -------    ----------    ------
-English       80.4%       0.29       0.98          Baseline inadequate
-Tamil         63.4%       0.59       0.67          Moderate performance
-Malayalam     30.3%       N/A        N/A           Insufficient - needs transformers
-```
-
-### Replicating Results
-
-To replicate the exact results reported:
-
-1. **Use the provided data splits** in `initial_data/`
-2. **Keep random seeds consistent** (set in `config.json`)
-3. **Run complete pipeline**:
-
-```bash
-python preprocess/preprocess_all_sphinx.py
-python training/train_all_sphinx.py
-```
-
-4. **Results will be printed** during training output
-5. **Models saved** in `models/` directory
-
-All results are deterministic given the same data and random seeds.
+Covers the processed-data contract (strictly binary labels, no
+not-in-language rows, no URL/mention artifacts, no duplicates, casing
+preserved), training utilities (pipeline construction, rule overrides across
+scripts and emoji, metrics), and saved-model integrity (including a
+regression test for the historical rules-pickle corruption bug).
 
 ---
 
 ## Documentation
 
-### Viewing HTML Documentation
-
-Complete API documentation with Google-style docstrings:
-
 ```bash
-# Windows
-start docs/build/html/index.html
-
-# macOS
-open docs/build/html/index.html
-
-# Linux
-xdg-open docs/build/html/index.html
-```
-
-### Documentation Contents
-
-- **Module Overview**: System architecture and design
-- **Function Reference**: Complete API with all parameters
-- **Usage Examples**: Working code snippets
-- **Parameter Descriptions**: Detailed type and usage info
-- **Return Values**: Expected outputs and types
-- **Error Handling**: Exceptions and edge cases
-- **Cross-References**: Links between related functions
-
-### Rebuilding Documentation
-
-If you modify code and need to regenerate docs:
-
-```bash
-# Install Sphinx (if not already installed)
 pip install sphinx sphinx-rtd-theme
-
-# Rebuild HTML documentation
-sphinx-build -b html docs/source docs/build/html
-
-# Open updated docs
-start docs/build/html/index.html  # Windows
+cd docs && ./make.bat html          # or: make html
+start build/html/index.html         # Windows
 ```
 
-### Documentation Standards
-
-This project follows professional documentation practices:
-- **Google-style docstrings** for all functions
-- **Sphinx** for automated generation
-- **Read the Docs theme** for professional appearance
-- **Type hints** throughout codebase
-- **Comprehensive examples** for each function
-- **Cross-referencing** between related components
+Sphinx autodoc generates the module reference from docstrings across
+`preprocess/`, `training/`, `evaluation/`, and `data_collection/`.
 
 ---
 
-## Research Context
+## Ethics & Data Notes
 
-This work is part of an applied data science research project investigating:
-- **Hope speech detection** in social media (YouTube comments)
-- **Low-resource languages** (Tamil, Malayalam)
-- **Code-mixed environments** (native + romanized scripts)
-- **Baseline vs. transformer models** performance comparison
-
-### Key Findings
-
-1. **English**: TF-IDF baseline shows promise but limited by lexical overlap
-2. **Tamil**: Moderate performance, benefits from negation rules
-3. **Malayalam**: Strong evidence that TF-IDF is insufficient for morphologically rich low-resource languages
-
-### Future Work
-
-- Implement transformer-based models (XLM-R, mBERT, IndicBERT)
-- Expand dataset with more Malayalam examples
-- Handle code-mixed text more robustly
-- Develop cross-lingual transfer learning approaches
-- Create real-time inference API
+- Comments collected via the **official YouTube Data API** within quota — no
+  HTML scraping.
+- **Anonymized at collection**: author names/ids are never read or stored;
+  only comment text, like count, and video id (for dedup) are kept, and raw
+  collected data stays out of version control.
+- **Silver labels are LLM-generated and disclosed as such**; quality is
+  quantified by per-language gold-agreement validation (0.545–0.855) and a
+  manual audit (90/100 on a random English sample).
+- Gold-label criticism is supported by concrete audited examples, not
+  aggregate numbers alone.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
-
----
+MIT License.
 
 ## Authors
 
-**Anjana Kopparthi** - Lead Developer
-
-© Copyright 2025, Anjana Kopparthi.  
-Built with Sphinx using a theme provided by Read the Docs.
-
----
+**Anjana Kopparthi** — DSCI-601, Rochester Institute of Technology.
 
 ## Citation
 
-If you use this code or dataset in your research, please cite:
-
 ```bibtex
-@article{kopparthi2025hope,
-  title={Multilingual Hope Speech Detection: A Baseline Approach},
+@misc{kopparthi2026hope,
+  title={Multilingual Hope Speech Detection: Benchmark Label Quality and an
+         LLM-Labeled Silver Standard},
   author={Kopparthi, Anjana},
-  year={2025}
+  year={2026}
 }
 ```
+
+Dataset: Chakravarthi, B. R. (2020). *HopeEDI: A multilingual hope speech
+detection dataset for equality, diversity, and inclusion.* PEOPLES @ COLING.

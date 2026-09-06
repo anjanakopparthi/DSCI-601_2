@@ -1,14 +1,16 @@
 """
 Build silver-standard train/dev/test splits from the LLM-labeled corpora.
 
-Input : data_collection/collected/{lang}_corpus_labeled.csv
-Output: processed_silver/{lang}_{split}_silver.csv
-        (columns: text, label_str, label - same format as processed/)
+Input : ``data_collection/collected/{lang}_corpus_labeled.csv``
+
+Output: ``processed_silver/{lang}_{split}_silver.csv``
+(columns: text, label_str, label — same format as processed/, so all
+existing training/eval code works by just pointing at this folder)
 
 Steps per language:
     1. Drop failed labels (label == -1) and exact-duplicate texts.
     2. CONTAMINATION CONTROL: drop any comment whose normalized text appears
-       in the GOLD dev or test split - silver-trained models will later be
+       in the GOLD dev or test split — silver-trained models will later be
        evaluated on gold test, so silver training data must not contain it.
     3. Stratified 80/10/10 train/dev/test split (seed 42), preserving the
        corpus's natural label distribution.
@@ -88,7 +90,7 @@ def main():
         print(f"{lang.capitalize():<12}{s['train']:>8}{s['dev']:>7}"
               f"{s['test']:>7}{s['hope_pct']:>8.1%}")
     print(f"\nSaved -> {OUT_DIR}")
-    print("NOTE: silver data is derived from scraped user comments - "
+    print("NOTE: silver data is derived from scraped user comments — "
           "processed_silver/ should stay gitignored like processed/.")
 
 

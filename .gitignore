@@ -12,3 +12,4 @@ archive/in_progress_scraping/
 .env
 *.log
 data_collection/collected/
+processed_silver/

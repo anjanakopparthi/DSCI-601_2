@@ -1,95 +1,142 @@
 """
-Filter and clean the scraped YouTube comment corpus for DAPT.
+Filter and clean a scraped YouTube comment corpus (multi-language).
 
-Reads data_collection/collected/tamil_comments_raw.csv (from
-fetch_comments.py) and produces a cleaned, deduplicated, Tamil-only corpus:
+Reads data_collection/collected/{lang}_comments_raw.csv (from
+fetch_comments.py) and produces a cleaned, deduplicated corpus for that
+language:
 
-    data_collection/collected/tamil_corpus_clean.csv   (columns: text, kind)
+    data_collection/collected/{lang}_corpus_clean.csv   (columns: text, kind)
 
-where kind is:
-    - "native"     : contains Tamil-script characters (>= 30% of letters)
-    - "romanized"  : Latin-script text matching a romanized-Tamil lexicon
-    - "mixed"      : some Tamil script, below the native threshold
+Per-language keep rules:
+    english   : Latin-script text that looks like English (stopword evidence);
+                other languages and script-mixed junk dropped. kind="english"
+    tamil     : native Tamil script / mixed / romanized Tamil (lexicon +
+                Tamil suffix morphology). kinds: native|mixed|romanized
+    malayalam : native Malayalam script / mixed / romanized Malayalam
+                ("Manglish", lexicon + suffix morphology). same kinds
 
-Everything else (pure English, other languages, spam, too short/long) is
-dropped. Prints a breakdown so you can judge the yield.
-
-Cleaning matches the supervised pipeline (preprocess_all.clean_text):
-URLs and @mentions removed, '#tag' -> 'tag', whitespace collapsed;
+Cleaning matches the supervised pipeline: URLs and @mentions removed,
+'#tag' -> 'tag', video timestamps removed, whitespace collapsed;
 punctuation/emoji/case preserved.
 
 Usage (from anywhere):
-    $ python data_collection/filter_corpus.py
-    $ python data_collection/filter_corpus.py --min-tokens 4
+    $ python data_collection/filter_corpus.py --lang english
+    $ python data_collection/filter_corpus.py --lang tamil
+    $ python data_collection/filter_corpus.py --lang malayalam
 """
 
 import argparse
 import csv
+import random
 import re
 import sys
 from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-RAW_PATH = HERE / "collected" / "tamil_comments_raw.csv"
-OUT_PATH = HERE / "collected" / "tamil_corpus_clean.csv"
 
 # --- cleaning (mirrors preprocess/preprocess_all.py) ---
 URL_RE = re.compile(r"(?:https?://|www\.)\S+")
 MENTION_RE = re.compile(r"@\w+")
 HASH_RE = re.compile(r"#(\w+)")
 WS_RE = re.compile(r"\s+")
-TIMESTAMP_RE = re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\b")   # video timestamps
+TIMESTAMP_RE = re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\b")
 
-TAMIL_CHAR_RE = re.compile(r"[\u0B80-\u0BFF]")
 LETTER_RE = re.compile(r"[^\W\d_]", re.UNICODE)
-TAMIL_SUFFIX_RE = re.compile(
-    r"(nga|ngal|inga|unga|uchu|ichu|udhu|athu|adhu|kittu|itten|iruken)$")
+LATIN_RE = re.compile(r"[A-Za-z]")
+TAMIL_CHAR_RE = re.compile(r"[\u0B80-\u0BFF]")
+MALAYALAM_CHAR_RE = re.compile(r"[\u0D00-\u0D7F]")
 
-# Frequent romanized-Tamil tokens (function words + very common words that are
-# unambiguous vs English). Two or more hits => romanized Tamil.
-ROMANIZED_LEXICON = {
-    "nambikkai", "nambikkaiya", "vazhkai", "valkai", "vazhkaila",
-    "nanba", "nanbargal", "thala", "thalaiva", "anna", "anne", "akka",
-    "semma", "vera", "level", "mass", "padam", "pathi", "romba", "rombha",
-    "iruku", "irukku", "irukku", "illa", "illai", "venum", "vendam",
-    "panna", "pannunga", "seri", "sari", "aana", "ana", "epdi", "eppadi",
-    "enna", "yenna", "unga", "ungal", "namma", "nammal", "avanga",
-    "intha", "antha", "ithu", "athu", "ella", "ellam", "elarum",
-    "vantha", "varum", "poga", "pona", "solli", "sollunga", "kelunga",
-    "paaru", "paarunga", "paatha", "kandippa", "kandipa", "mudiyum",
-    "mudiyathu", "mudiyaathu", "vetri", "velvom", "jeipom", "jeippom",
-    "da", "dei", "bro", "machan", "machi", "sir", "ji", "saar",
-    "super", "superb", "nalla", "nallavan", "azhaga", "alaga",
-    "kashtam", "kastam", "sandhosham", "santhosham", "magizhchi",
-    # round 2: mined from the dropped-'other' sample
+ENGLISH_STOPWORDS = {
+    "the", "is", "are", "was", "were", "and", "or", "of", "to", "in", "on",
+    "for", "with", "this", "that", "you", "your", "it", "its", "very", "so",
+    "have", "has", "will", "would", "can", "could", "should", "a", "an", "i",
+    "im", "me", "my", "we", "our", "he", "she", "they", "his", "her", "be",
+    "been", "do", "does", "did", "not", "no", "but", "if", "as", "at", "by",
+    "from", "up", "out", "all", "just", "what", "when", "how", "who", "why",
+    "there", "here", "one", "get", "got", "like", "love", "never", "give",
+    "keep", "going", "thank", "thanks", "god", "people", "life", "time",
+}
+
+TAMIL_ROMANIZED_LEXICON = {
+    "nambikkai", "nambikkaiya", "vazhkai", "valkai", "vazhkaila", "nanba",
+    "nanbargal", "thala", "thalaiva", "anna", "anne", "akka", "semma",
+    "vera", "level", "mass", "padam", "pathi", "romba", "rombha", "iruku",
+    "irukku", "illa", "illai", "venum", "vendam", "panna", "pannunga",
+    "seri", "sari", "aana", "ana", "epdi", "eppadi", "enna", "yenna",
+    "unga", "ungal", "namma", "nammal", "avanga", "intha", "antha", "ithu",
+    "athu", "ella", "ellam", "elarum", "vantha", "varum", "poga", "pona",
+    "solli", "sollunga", "kelunga", "paaru", "paarunga", "paatha",
+    "kandippa", "kandipa", "mudiyum", "mudiyathu", "mudiyaathu", "vetri",
+    "velvom", "jeipom", "jeippom", "da", "dei", "bro", "machan", "machi",
+    "sir", "ji", "saar", "super", "superb", "nalla", "nallavan", "azhaga",
+    "alaga", "kashtam", "kastam", "sandhosham", "santhosham", "magizhchi",
     "edhu", "ethu", "adhu", "idhu", "theriyum", "therihum", "theriyadha",
     "therila", "therilla", "teriyum", "pattha", "paakkala", "pakkala",
     "udane", "udanea", "avalo", "evalo", "evlo", "ivlo", "ippo", "ipo",
-    "apram", "appuram", "apdi", "ipdi", "appadi", "ippadi", "epdi",
-    "yaen", "yen", "yenda", "engada", "thozha", "machaan", "ayyo",
-    "aiyo", "aiyoo", "yappa", "podu", "podunga", "pannu", "panalum",
-    "pannalam", "poren", "pora", "povaen", "pova", "polam", "polama",
-    "mudila", "mudiyala", "mudingada", "ayiduchu", "aachu", "aayiduchu",
-    "varaikum", "vanthu", "vanga", "vaanga", "vanka", "pakkam",
-    "mattum", "matum", "innum", "avan", "aval", "avar", "ivan",
-    "veetla", "veedu", "irunthu", "irundhu", "iruka", "irukinga",
-    "irukke", "irruku", "irukum", "irukkum", "makkal", "makkalukku",
-    "varusham", "varushame", "manikku", "kelvi", "sami", "saami",
-    "mamiyar", "purushan", "pondatti", "thangachi", "thambi",
-    "samathuva", "arasiyal", "padikanum", "padichen", "padicha",
-    "sollanum", "solranga", "soldringa", "sonna", "sonnanga",
-    "kudukalam", "kuduthanga", "vangi", "sapdunga", "sapduga",
+    "apram", "appuram", "apdi", "ipdi", "appadi", "ippadi", "yaen", "yen",
+    "yenda", "engada", "thozha", "machaan", "ayyo", "aiyo", "aiyoo",
+    "yappa", "podu", "podunga", "pannu", "panalum", "pannalam", "poren",
+    "pora", "povaen", "pova", "polam", "polama", "mudila", "mudiyala",
+    "mudingada", "ayiduchu", "aachu", "aayiduchu", "varaikum", "vanthu",
+    "vanga", "vaanga", "vanka", "pakkam", "mattum", "matum", "innum",
+    "avan", "aval", "avar", "ivan", "veetla", "veedu", "irunthu",
+    "irundhu", "iruka", "irukinga", "irukke", "irruku", "irukum",
+    "irukkum", "makkal", "makkalukku", "varusham", "varushame", "manikku",
+    "kelvi", "sami", "saami", "mamiyar", "purushan", "pondatti",
+    "thangachi", "thambi", "samathuva", "arasiyal", "padikanum",
+    "padichen", "padicha", "sollanum", "solranga", "soldringa", "sonna",
+    "sonnanga", "kudukalam", "kuduthanga", "vangi", "sapdunga", "sapduga",
     "saptiya", "thoonga", "thookam", "yosanai", "nenachu", "nenaikiren",
 }
-# "da","bro","sir","super" alone are weak -> require >= 2 distinct hits
-WEAK_TOKENS = {"da", "bro", "sir", "ji", "super", "superb", "mass", "level"}
+TAMIL_SUFFIX_RE = re.compile(
+    r"(nga|ngal|inga|unga|uchu|ichu|udhu|athu|adhu|kittu|itten|iruken)$")
+TAMIL_WEAK = {"da", "dei", "bro", "sir", "ji", "super", "superb", "mass",
+              "level"}
 
-ENGLISH_STOPWORDS = {
-    "the", "is", "are", "was", "were", "and", "or", "of", "to", "in",
-    "for", "with", "this", "that", "you", "your", "it", "its", "very",
-    "have", "has", "will", "would", "can", "could", "should", "a", "an",
+# Romanized Malayalam ("Manglish") — common function words + frequent tokens
+MALAYALAM_ROMANIZED_LEXICON = {
+    "njan", "njn", "ente", "ningal", "ningalude", "nammal", "namuk",
+    "namukku", "avan", "aval", "avar", "avante", "avalude", "athe",
+    "athu", "ithu", "ith", "alle", "alla", "illa", "illatha", "undu",
+    "und", "undo", "aanu", "anu", "aan", "aano", "ano", "cheyyuka",
+    "cheyyum", "cheythu", "cheyyu", "nannayi", "nalla", "nallathu",
+    "kollam", "kollaam", "adipoli", "pwoli", "poli", "kidu", "kidukki",
+    "chetta", "chettan", "chechi", "chechy", "machane", "machan", "mone",
+    "mole", "eda", "edi", "enthu", "entha", "enthina", "engane",
+    "enganeya", "evide", "evideya", "ippo", "ippol", "appo", "appol",
+    "pinne", "onnum", "ellam", "ellarum", "oru", "koode", "koodi",
+    "venam", "venda", "vannu", "varum", "varu", "pokum", "poyi", "poku",
+    "nokku", "nokkam", "nokki", "para", "parayu", "paranju", "ariyilla",
+    "ariyam", "ariyaam", "sughamano", "sukhamano", "santhosham",
+    "sneham", "prateeksha", "pratheeksha", "vishwasam", "jeevitham",
+    "jeevithathil", "padikkuka", "padichu", "padikkanam", "pani",
+    "sherikkum", "sheriyanu", "sheri", "shariyanu", "onnu", "randu",
+    "kure", "orupad", "orupadu", "valare", "vare", "mathi", "mathram",
+    "polum", "thanne", "thanneya", "kandu", "kanam", "kelkkuka", "kettu",
+    "ishtam", "ishtamanu", "istam",
+    # round 2: mined from the dropped-sample audit
+    "kurich", "kurichu", "cheyyo", "cheyuna", "cheythal", "manassil",
+    "thattiya", "vaangum", "vangum", "vaangi", "kittum", "kitti",
+    "kittunnu", "kittiyilla", "aayi", "aayirunnu", "enik", "enikku",
+    "eniku", "ithilum", "athilum", "engane", "enganya", "ariyam",
+    "ariyathondu", "padikunnathu", "padikkum", "padikan", "padikkan",
+    "kazhikkan", "kazhichu", "parnju", "paranjathu", "thanna", "tharu",
+    "tharumo", "kidumo", "kollilla", "kollavunna", "maatramanu",
+    "mathramanu", "avatharana", "ottakaran", "pakshe", "bhayangara",
+    "aaradhana", "prayasam", "vilichille", "odiyilla", "najn",
 }
+MALAYALAM_WEAK = {"mass", "poli", "super", "bro", "sir", "kidu"}
+# unambiguous even as a single hit (can't be English/Tamil/Hindi)
+MALAYALAM_DISTINCT = {
+    "njan", "njn", "najn", "ente", "aanu", "alle", "kollam", "adipoli",
+    "pwoli", "chetta", "chettan", "chechi", "chechy", "machane", "mone",
+    "enthina", "evide", "ippol", "appol", "venda", "ariyilla", "paranju",
+    "sherikkum", "enikku", "manassil", "njangal", "nammude", "ningalude",
+}
+MALAYALAM_SUFFIX_RE = re.compile(
+    r"(unnu|unna|aanu|anu|illa|alla|alle|ille|ittund|ittu|ukayanu|"
+    r"aayirunnu|ikkum|aayi|umo|unnathu)$")
 
 
 def clean_text(text: str) -> str:
@@ -102,50 +149,100 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def classify(text: str) -> str:
-    """Return 'native' | 'mixed' | 'romanized' | 'english' | 'other'."""
+# ============================================================
+# Per-language classifiers -> kind or None (= drop)
+# ============================================================
+
+def _romanized(tokens, lexicon, weak, suffix_re):
+    hits = {t for t in tokens if t in lexicon}
+    pattern_hits = {t for t in tokens if len(t) >= 5 and suffix_re.search(t)}
+    strong = (hits - weak) | pattern_hits
+    return len(hits | pattern_hits) >= 2 and bool(strong)
+
+
+def classify_dravidian(text, script_re, lexicon, weak, suffix_re):
     letters = LETTER_RE.findall(text)
     if not letters:
-        return "other"
-    tamil_ratio = len(TAMIL_CHAR_RE.findall(text)) / len(letters)
-    if tamil_ratio >= 0.30:
+        return None
+    ratio = len(script_re.findall(text)) / len(letters)
+    if ratio >= 0.30:
         return "native"
-    if tamil_ratio > 0:
+    if ratio > 0:
         return "mixed"
+    tokens = [t.lower() for t in re.findall(r"[a-zA-Z]+", text)]
+    if tokens and _romanized(tokens, lexicon, weak, suffix_re):
+        return "romanized"
+    return None
 
+
+def classify_english(text):
+    letters = LETTER_RE.findall(text)
+    if not letters:
+        return None
+    latin_ratio = len(LATIN_RE.findall(text)) / len(letters)
+    if latin_ratio < 0.90:              # substantial non-Latin script
+        return None
     tokens = [t.lower() for t in re.findall(r"[a-zA-Z]+", text)]
     if not tokens:
-        return "other"
-    hits = {t for t in tokens if t in ROMANIZED_LEXICON}
-    # morphology booster: word endings that are distinctly Tamil
-    # (verb/plural/politeness suffixes rare in English/Hindi)
-    pattern_hits = {t for t in tokens if len(t) >= 5 and
-                    TAMIL_SUFFIX_RE.search(t)}
-    strong_hits = (hits - WEAK_TOKENS) | pattern_hits
-    if len(hits | pattern_hits) >= 2 and strong_hits:
-        return "romanized"
-
+        return None
+    # not English if it reads as romanized Tamil/Malayalam
+    if _romanized(tokens, TAMIL_ROMANIZED_LEXICON, TAMIL_WEAK,
+                  TAMIL_SUFFIX_RE):
+        return None
+    if _romanized(tokens, MALAYALAM_ROMANIZED_LEXICON, MALAYALAM_WEAK,
+                  MALAYALAM_SUFFIX_RE):
+        return None
     stop_ratio = sum(t in ENGLISH_STOPWORDS for t in tokens) / len(tokens)
-    if stop_ratio >= 0.15:
+    if stop_ratio >= 0.15 or (len(tokens) <= 6 and stop_ratio > 0):
         return "english"
-    return "other"
+    return None
 
+
+def classify_malayalam(text):
+    kind = classify_dravidian(text, MALAYALAM_CHAR_RE,
+                              MALAYALAM_ROMANIZED_LEXICON, MALAYALAM_WEAK,
+                              MALAYALAM_SUFFIX_RE)
+    if kind is not None:
+        return kind
+    tokens = [t.lower() for t in re.findall(r"[a-zA-Z]+", text)]
+    if any(t in MALAYALAM_DISTINCT for t in tokens):
+        return "romanized"
+    return None
+
+
+CLASSIFIERS = {
+    "english": classify_english,
+    "tamil": lambda t: classify_dravidian(
+        t, TAMIL_CHAR_RE, TAMIL_ROMANIZED_LEXICON, TAMIL_WEAK,
+        TAMIL_SUFFIX_RE),
+    "malayalam": lambda t: classify_malayalam(t),
+}
+
+
+# ============================================================
+# Main
+# ============================================================
 
 def main():
     parser = argparse.ArgumentParser(description="Filter scraped corpus")
+    parser.add_argument("--lang", default="tamil",
+                        choices=list(CLASSIFIERS.keys()))
     parser.add_argument("--min-tokens", type=int, default=3)
     parser.add_argument("--max-chars", type=int, default=1000)
     args = parser.parse_args()
 
-    if not RAW_PATH.exists():
-        sys.exit(f"{RAW_PATH} not found — run fetch_comments.py first")
+    raw_path = HERE / "collected" / f"{args.lang}_comments_raw.csv"
+    out_path = HERE / "collected" / f"{args.lang}_corpus_clean.csv"
+    if not raw_path.exists():
+        sys.exit(f"{raw_path} not found — run fetch_comments.py --lang "
+                 f"{args.lang} first")
 
-    with RAW_PATH.open("r", encoding="utf-8") as f:
+    with raw_path.open("r", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    print(f"Raw comments:        {len(rows)}")
+    print(f"[{args.lang}] raw comments:  {len(rows)}")
 
-    seen, kept, counts = set(), [], Counter()
-    dropped_other = []
+    classify = CLASSIFIERS[args.lang]
+    seen, kept, counts, dropped = set(), [], Counter(), []
     for row in rows:
         text = clean_text(row["text"])
         if not text or len(text) > args.max_chars:
@@ -159,39 +256,34 @@ def main():
             counts["dropped_dup"] += 1
             continue
         seen.add(key)
-
         kind = classify(text)
-        counts[kind] += 1
-        if kind in ("native", "mixed", "romanized"):
+        if kind is None:
+            counts["dropped_other"] += 1
+            dropped.append(text)
+        else:
+            counts[kind] += 1
             kept.append({"text": text, "kind": kind})
-        elif kind == "other":
-            dropped_other.append(text)
 
-    with OUT_PATH.open("w", newline="", encoding="utf-8") as f:
+    with out_path.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["text", "kind"])
         w.writeheader()
         w.writerows(kept)
 
-    print(f"After length/dup:    {sum(counts[k] for k in ('native','mixed','romanized','english','other'))}"
-          f"  (short: {counts['dropped_short']}, dup: {counts['dropped_dup']},"
-          f" len: {counts['dropped_len']})")
-    print(f"  native Tamil:      {counts['native']}")
-    print(f"  mixed script:      {counts['mixed']}")
-    print(f"  romanized Tamil:   {counts['romanized']}")
-    print(f"  english (dropped): {counts['english']}")
-    print(f"  other (dropped):   {counts['other']}")
-    print(f"\nKept for corpus:     {len(kept)}")
-    print(f"Saved -> {OUT_PATH}")
+    print(f"  dropped: short {counts['dropped_short']}, "
+          f"dup {counts['dropped_dup']}, len {counts['dropped_len']}, "
+          f"other-language/junk {counts['dropped_other']}")
+    for kind in ("english", "native", "mixed", "romanized"):
+        if counts[kind]:
+            print(f"  kept {kind}: {counts[kind]}")
+    print(f"  TOTAL KEPT: {len(kept)}")
+    print(f"  saved -> {out_path}")
 
-    # sample of the 'other' bucket for manual inspection — if these look like
-    # romanized Tamil, the lexicon needs more words
-    if dropped_other:
-        import random
+    if dropped:
         random.seed(0)
-        sample = random.sample(dropped_other, min(60, len(dropped_other)))
-        sample_path = OUT_PATH.parent / "dropped_other_sample.txt"
+        sample = random.sample(dropped, min(60, len(dropped)))
+        sample_path = out_path.parent / f"dropped_sample_{args.lang}.txt"
         sample_path.write_text("\n".join(sample), encoding="utf-8")
-        print(f"Sample of dropped 'other' rows -> {sample_path}")
+        print(f"  sample of dropped rows -> {sample_path}")
 
 
 if __name__ == "__main__":

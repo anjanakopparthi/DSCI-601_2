@@ -1,57 +1,34 @@
 # Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+# Docs for the Multilingual Hope Speech Detection project (DSCI-601).
+
+import sys
+from pathlib import Path
+
+# Make the project modules importable for autodoc.
+# docs/source/conf.py -> repo root is two levels up.
+ROOT = Path(__file__).resolve().parent.parent.parent
+for sub in ("preprocess", "training", "evaluation", "data_collection"):
+    sys.path.insert(0, str(ROOT / sub))
 
 # -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
-project = 'Hope Speech Preprocessing'
-copyright = '2024, Anjana Kopparthi'
-author = 'Anjana Kopparthi'
-release = '1.0.0'
+project = "Multilingual Hope Speech Detection"
+author = "Anjana Kopparthi"
+copyright = "2026, Anjana Kopparthi"
+release = "2.0"
 
 # -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-import os
-import sys
-# Add the path to your Python module (adjust if your structure is different)
-import os
-import sys
-# Add paths to both modules
-sys.path.insert(0, os.path.abspath('../../preprocess'))
-sys.path.insert(0, os.path.abspath('../../training'))
-
-
-
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',  # For Google/NumPy style docstrings
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
 ]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = []
 
-# Napoleon settings for Google-style docstrings
-napoleon_google_docstring = True
-napoleon_numpy_docstring = False
-napoleon_include_init_with_doc = False
-napoleon_include_private_with_doc = False
-napoleon_include_special_with_doc = True
-napoleon_use_admonition_for_examples = False
-napoleon_use_admonition_for_notes = False
-napoleon_use_admonition_for_references = False
-napoleon_use_ivar = False
-napoleon_use_param = True
-napoleon_use_rtype = True
-napoleon_preprocess_types = False
-napoleon_type_aliases = None
-napoleon_attr_annotations = True
+# Don't require heavy ML deps to be importable when building docs.
+autodoc_mock_imports = ["joblib", "sklearn", "pandas", "numpy", "requests"]
 
 # -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]

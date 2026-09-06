@@ -2,7 +2,7 @@
 Gold-vs-silver cross-evaluation report.
 
 Aggregates all cross-evaluation results into per-language 2x2 matrices for
-both model families:
+both model families::
 
                          | gold test | silver test
     ---------------------+-----------+-------------

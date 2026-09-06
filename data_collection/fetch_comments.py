@@ -43,8 +43,7 @@ import requests
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUT_DIR = Path(__file__).resolve().parent / "collected"
-STATE_PATH = OUT_DIR / "state.json"
-CSV_PATH = OUT_DIR / "tamil_comments_raw.csv"
+# STATE_PATH / CSV_PATH are set per --lang in main()
 
 API_BASE = "https://www.googleapis.com/youtube/v3"
 COST_SEARCH = 100
@@ -52,30 +51,58 @@ COST_COMMENTS = 1
 
 # Search queries mirroring the HopeEDI topic domains, in Tamil + romanized
 # Tamil + English-with-Tamil-audience phrasing. Edit freely.
-SEARCH_QUERIES = [
-    # original domains, deeper in Tamil
-    "நம்பிக்கை பேச்சு",
-    "வாழ்க்கை அறிவுரை",
-    "தன்னம்பிக்கை பேச்சு",
-    "மாணவர்கள் ஊக்கம் பேச்சு",
-    "வெற்றி பெற வழிகள் தமிழ்",
-    "பெண்கள் முன்னேற்றம் பேச்சு",
-    "பெண் தொழில்முனைவோர் தமிழ்",
-    "கொரோனா நேர்மறை தமிழ்",
-    "தோல்வியில் இருந்து வெற்றி தமிழ்",
-    "மனநலம் ஆலோசனை தமிழ்",
-    # romanized-audience queries (comments skew romanized Tamil)
-    "thannambikkai speech tamil",
-    "vetri nichayam motivation",
-    "tamil comedy vlog",
-    "tamil village vlog",
-    "chennai vlog tamil",
-    "tamil cinema review latest",
-    "tamil serial today episode review",
-    "tamil songs whatsapp status",
-    "anna university exam tamil",
-    "tamil news pesu",
-]
+LANG_CONFIG = {
+    "tamil": {
+        "relevance_language": "ta",
+        "queries": [
+            "நம்பிக்கை பேச்சு", "வாழ்க்கை அறிவுரை", "தன்னம்பிக்கை பேச்சு",
+            "மாணவர்கள் ஊக்கம் பேச்சு", "வெற்றி பெற வழிகள் தமிழ்",
+            "பெண்கள் முன்னேற்றம் பேச்சு", "கொரோனா நேர்மறை தமிழ்",
+            "thannambikkai speech tamil", "tamil village vlog",
+            "tamil cinema review latest", "tamil motivation never give up",
+        ],
+    },
+    "english": {
+        # mirrors HopeEDI English domains: EDI topics, women in STEM,
+        # BLM/equality discussions, COVID-era encouragement
+        "relevance_language": "en",
+        "queries": [
+            "never give up motivational speech",
+            "overcoming depression recovery story",
+            "mental health recovery journey",
+            "women in engineering interview",
+            "women in STEM panel discussion",
+            "first generation college student story",
+            "black lives matter discussion panel",
+            "racial equality speech",
+            "LGBTQ coming out support",
+            "disability success story interview",
+            "covid survivor story hope",
+            "cancer survivor motivational story",
+            "immigrant success story interview",
+            "students exam motivation speech",
+        ],
+    },
+    "malayalam": {
+        "relevance_language": "ml",
+        "queries": [
+            "പ്രചോദന പ്രസംഗം",              # motivational speech
+            "ജീവിതം പ്രതീക്ഷ മലയാളം",        # life hope
+            "മോട്ടിവേഷൻ മലയാളം",
+            "വിജയ കഥ മലയാളം",                # success story
+            "സ്ത്രീ ശാക്തീകരണം മലയാളം",       # women empowerment
+            "കൊറോണ അതിജീവനം മലയാളം",        # covid survival
+            "പരീക്ഷ മോട്ടിവേഷൻ മലയാളം",
+            "പ്രതീക്ഷ നൽകുന്ന വാക്കുകൾ",      # words that give hope
+            "malayalam motivation speech",
+            "life motivation malayalam",
+            "kerala village vlog malayalam",
+            "malayalam movie review latest",
+            "psc exam motivation malayalam",
+            "malayalam inspirational story",
+        ],
+    },
+}
 
 
 # ============================================================
@@ -140,12 +167,13 @@ def yt_get(endpoint: str, params: dict, api_key: str) -> dict | None:
 # 2. Collection
 # ============================================================
 
-def search_videos(query: str, api_key: str, max_results: int = 25) -> list[str]:
+def search_videos(query: str, api_key: str, relevance_language: str,
+                  max_results: int = 25) -> list[str]:
     """Video ids for a search query (1 call = 100 units)."""
     data = yt_get("search", {
         "part": "id", "q": query, "type": "video",
         "maxResults": min(max_results, 50),
-        "relevanceLanguage": "ta", "regionCode": "IN",
+        "relevanceLanguage": relevance_language, "regionCode": "IN",
         "safeSearch": "none",
     }, api_key)
     if not data or data.get("_quota_exceeded"):
@@ -199,19 +227,19 @@ WS_RE = re.compile(r"\s+")
 # 3. State + output
 # ============================================================
 
-def load_state() -> dict:
-    if STATE_PATH.exists():
-        return json.loads(STATE_PATH.read_text(encoding="utf-8"))
+def load_state(state_path: Path) -> dict:
+    if state_path.exists():
+        return json.loads(state_path.read_text(encoding="utf-8"))
     return {"seen_videos": [], "n_comments": 0}
 
 
-def save_state(state: dict):
-    STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
+def save_state(state: dict, state_path: Path):
+    state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
-def append_comments(rows: list[dict]):
-    new_file = not CSV_PATH.exists()
-    with CSV_PATH.open("a", newline="", encoding="utf-8") as f:
+def append_comments(rows: list[dict], csv_path: Path):
+    new_file = not csv_path.exists()
+    with csv_path.open("a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["video_id", "text", "like_count"])
         if new_file:
             w.writeheader()
@@ -223,7 +251,9 @@ def append_comments(rows: list[dict]):
 # ============================================================
 
 def main():
-    parser = argparse.ArgumentParser(description="Collect Tamil YouTube comments")
+    parser = argparse.ArgumentParser(description="Collect YouTube comments")
+    parser.add_argument("--lang", default="tamil",
+                        choices=list(LANG_CONFIG.keys()))
     parser.add_argument("--max-videos", type=int, default=20,
                         help="videos per search query (default 20)")
     parser.add_argument("--pages-per-video", type=int, default=3,
@@ -234,20 +264,31 @@ def main():
 
     api_key = load_api_key()
     OUT_DIR.mkdir(exist_ok=True)
-    state = load_state()
+    cfg = LANG_CONFIG[args.lang]
+    state_path = OUT_DIR / f"state_{args.lang}.json"
+    csv_path = OUT_DIR / f"{args.lang}_comments_raw.csv"
+    # migration: original tamil run used unsuffixed filenames
+    if args.lang == "tamil":
+        legacy_state, legacy_csv = OUT_DIR / "state.json", OUT_DIR / "tamil_comments_raw.csv"
+        if legacy_state.exists() and not state_path.exists():
+            state_path = legacy_state
+        csv_path = legacy_csv
+    state = load_state(state_path)
     seen = set(state["seen_videos"])
     quota = QuotaTracker(args.budget)
     total_new = 0
 
-    print(f"Resuming with {len(seen)} videos already collected, "
+    print(f"[{args.lang}] resuming with {len(seen)} videos already collected, "
           f"{state['n_comments']} comments so far")
 
-    for query in SEARCH_QUERIES:
+    for query in cfg["queries"]:
         if not quota.charge(COST_SEARCH):
             print("Budget exhausted before search — stopping.")
             break
         print(f"\nSearch: {query!r}")
-        video_ids = [v for v in search_videos(query, api_key, args.max_videos)
+        video_ids = [v for v in search_videos(query, api_key,
+                                              cfg["relevance_language"],
+                                              args.max_videos)
                      if v not in seen]
         print(f"  {len(video_ids)} new videos")
 
@@ -258,14 +299,14 @@ def main():
                                         max_pages=args.pages_per_video)
             seen.add(vid)
             if rows:
-                append_comments(rows)
+                append_comments(rows, csv_path)
                 total_new += len(rows)
                 print(f"  {vid}: +{len(rows)} comments "
                       f"(total new: {total_new}, units: {quota.spent})")
             # persist incrementally so interruptions lose nothing
             state["seen_videos"] = sorted(seen)
             state["n_comments"] = state.get("n_comments", 0) + len(rows)
-            save_state(state)
+            save_state(state, state_path)
 
         if quota.spent >= quota.budget:
             print("\nBudget exhausted — rerun tomorrow to continue (resumes).")
@@ -273,7 +314,7 @@ def main():
 
     print(f"\nDone. New comments this run: {total_new}")
     print(f"API units spent: {quota.spent}/{args.budget}")
-    print(f"Corpus file: {CSV_PATH}")
+    print(f"Corpus file: {csv_path}")
     print("Reminder: collected/ is raw user text — keep it out of git.")
 
 

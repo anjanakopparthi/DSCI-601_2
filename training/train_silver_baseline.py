@@ -3,7 +3,7 @@ Silver-track baseline: train TF-IDF + LR on the LLM-labeled silver data and
 cross-evaluate against both test sets.
 
 For each language this script produces the full baseline half of the
-cross-evaluation matrix:
+cross-evaluation matrix::
 
                           | silver test | gold test
     ----------------------+-------------+-----------
