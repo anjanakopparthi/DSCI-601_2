@@ -9,33 +9,33 @@
     "seed": 42
   },
   "dev": {
-    "loss": 0.5593,
-    "accuracy": 0.9205,
-    "macro_f1": 0.7982,
-    "weighted_f1": 0.9254,
-    "hope_f1": 0.641,
-    "hope_precision": 0.5618,
-    "hope_recall": 0.7463
+    "loss": 0.576,
+    "accuracy": 0.9152,
+    "macro_f1": 0.7813,
+    "weighted_f1": 0.9199,
+    "hope_f1": 0.6101,
+    "hope_precision": 0.542,
+    "hope_recall": 0.6978
   },
   "test": {
-    "loss": 0.598,
-    "accuracy": 0.9136,
-    "macro_f1": 0.7677,
-    "weighted_f1": 0.9192,
-    "hope_f1": 0.5836,
-    "hope_precision": 0.5089,
-    "hope_recall": 0.684,
-    "runtime": 3.7995,
-    "samples_per_second": 742.983,
-    "steps_per_second": 11.844,
+    "loss": 0.5751,
+    "accuracy": 0.9129,
+    "macro_f1": 0.7637,
+    "weighted_f1": 0.9182,
+    "hope_f1": 0.5759,
+    "hope_precision": 0.5061,
+    "hope_recall": 0.668,
+    "runtime": 3.5214,
+    "samples_per_second": 801.665,
+    "steps_per_second": 12.779,
     "confusion_matrix": [
       [
-        2408,
-        165
+        2410,
+        163
       ],
       [
-        79,
-        171
+        83,
+        167
       ]
     ]
   }
