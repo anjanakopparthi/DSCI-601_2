@@ -6,36 +6,36 @@
     "batch_size": 16,
     "epochs": 6,
     "lr": 2e-05,
-    "seed": 42
+    "seed": 1234
   },
   "dev": {
-    "loss": 0.5998,
-    "accuracy": 0.8577,
-    "macro_f1": 0.7802,
-    "weighted_f1": 0.8596,
-    "hope_f1": 0.6497,
-    "hope_precision": 0.6275,
-    "hope_recall": 0.6737
+    "loss": 0.5616,
+    "accuracy": 0.8701,
+    "macro_f1": 0.7962,
+    "weighted_f1": 0.8709,
+    "hope_f1": 0.6736,
+    "hope_precision": 0.6633,
+    "hope_recall": 0.6842
   },
   "test": {
-    "loss": 0.4808,
-    "accuracy": 0.8788,
-    "macro_f1": 0.8179,
-    "weighted_f1": 0.881,
-    "hope_f1": 0.7125,
-    "hope_precision": 0.6776,
-    "hope_recall": 0.7513,
-    "runtime": 1.5581,
-    "samples_per_second": 619.34,
-    "steps_per_second": 10.269,
+    "loss": 0.5195,
+    "accuracy": 0.8725,
+    "macro_f1": 0.8057,
+    "weighted_f1": 0.8741,
+    "hope_f1": 0.6917,
+    "hope_precision": 0.6699,
+    "hope_recall": 0.715,
+    "runtime": 1.4451,
+    "samples_per_second": 667.764,
+    "steps_per_second": 11.072,
     "confusion_matrix": [
       [
-        703,
-        69
+        704,
+        68
       ],
       [
-        48,
-        145
+        55,
+        138
       ]
     ]
   }

@@ -6,36 +6,36 @@
     "batch_size": 16,
     "epochs": 6,
     "lr": 2e-05,
-    "seed": 42
+    "seed": 1234
   },
   "dev": {
-    "loss": 0.6465,
-    "accuracy": 0.6579,
-    "macro_f1": 0.6495,
-    "weighted_f1": 0.657,
-    "hope_f1": 0.595,
-    "hope_precision": 0.6069,
-    "hope_recall": 0.5836
+    "loss": 0.6441,
+    "accuracy": 0.6653,
+    "macro_f1": 0.6565,
+    "weighted_f1": 0.6641,
+    "hope_f1": 0.6014,
+    "hope_precision": 0.6173,
+    "hope_recall": 0.5862
   },
   "test": {
-    "loss": 0.6728,
-    "accuracy": 0.6398,
-    "macro_f1": 0.6353,
-    "weighted_f1": 0.6384,
-    "hope_f1": 0.5947,
-    "hope_precision": 0.619,
-    "hope_recall": 0.5723,
-    "runtime": 2.3141,
-    "samples_per_second": 757.096,
-    "steps_per_second": 12.1,
+    "loss": 0.6722,
+    "accuracy": 0.641,
+    "macro_f1": 0.6362,
+    "weighted_f1": 0.6394,
+    "hope_f1": 0.5945,
+    "hope_precision": 0.6213,
+    "hope_recall": 0.5698,
+    "runtime": 2.3421,
+    "samples_per_second": 748.035,
+    "steps_per_second": 11.955,
     "confusion_matrix": [
       [
-        658,
-        285
+        662,
+        281
       ],
       [
-        346,
-        463
+        348,
+        461
       ]
     ]
   }
