@@ -1,26 +1,26 @@
 {
-  "XLM-R|tamil": {
-    "lr": 3e-05,
-    "n_seeds": 3,
-    "test_macro_f1_mean": 0.6164,
-    "test_macro_f1_std": 0.0184,
-    "test_macro_f1_runs": [
-      0.6295,
-      0.6243,
-      0.5953
-    ],
-    "test_hope_f1_mean": 0.5643
-  },
-  "MuRIL|tamil": {
+  "XLM-R|malayalam": {
     "lr": 1e-05,
     "n_seeds": 3,
-    "test_macro_f1_mean": 0.6359,
-    "test_macro_f1_std": 0.0008,
+    "test_macro_f1_mean": 0.8101,
+    "test_macro_f1_std": 0.0085,
     "test_macro_f1_runs": [
-      0.6354,
-      0.6355,
-      0.6369
+      0.8193,
+      0.8085,
+      0.8025
     ],
-    "test_hope_f1_mean": 0.5867
+    "test_hope_f1_mean": 0.7072
+  },
+  "MuRIL|malayalam": {
+    "lr": 3e-05,
+    "n_seeds": 3,
+    "test_macro_f1_mean": 0.8,
+    "test_macro_f1_std": 0.0107,
+    "test_macro_f1_runs": [
+      0.7989,
+      0.7899,
+      0.8112
+    ],
+    "test_hope_f1_mean": 0.6771
   }
 }
