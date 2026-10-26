@@ -1,0 +1,244 @@
+{
+  "runs": [
+    {
+      "kind": "epoch0",
+      "model": "xlm-roberta-base",
+      "lang": "tamil",
+      "seed": 42,
+      "dev": {
+        "accuracy": 0.5694,
+        "macro_f1": 0.3628,
+        "hope_f1": 0.0,
+        "hope_precision": 0.0,
+        "hope_recall": 0.0
+      },
+      "test": {
+        "accuracy": 0.5382,
+        "macro_f1": 0.3499,
+        "hope_f1": 0.0,
+        "hope_precision": 0.0,
+        "hope_recall": 0.0
+      },
+      "minutes": 0.6
+    },
+    {
+      "kind": "epoch0",
+      "model": "google/muril-base-cased",
+      "lang": "tamil",
+      "seed": 42,
+      "dev": {
+        "accuracy": 0.4306,
+        "macro_f1": 0.301,
+        "hope_f1": 0.602,
+        "hope_precision": 0.4306,
+        "hope_recall": 1.0
+      },
+      "test": {
+        "accuracy": 0.4618,
+        "macro_f1": 0.3159,
+        "hope_f1": 0.6318,
+        "hope_precision": 0.4618,
+        "hope_recall": 1.0
+      },
+      "minutes": 0.47
+    },
+    {
+      "kind": "epoch0",
+      "model": "xlm-roberta-base",
+      "lang": "malayalam",
+      "seed": 42,
+      "dev": {
+        "accuracy": 0.8041,
+        "macro_f1": 0.4457,
+        "hope_f1": 0.0,
+        "hope_precision": 0.0,
+        "hope_recall": 0.0
+      },
+      "test": {
+        "accuracy": 0.8,
+        "macro_f1": 0.4444,
+        "hope_f1": 0.0,
+        "hope_precision": 0.0,
+        "hope_recall": 0.0
+      },
+      "minutes": 0.29
+    },
+    {
+      "kind": "epoch0",
+      "model": "google/muril-base-cased",
+      "lang": "malayalam",
+      "seed": 42,
+      "dev": {
+        "accuracy": 0.1959,
+        "macro_f1": 0.1638,
+        "hope_f1": 0.3276,
+        "hope_precision": 0.1959,
+        "hope_recall": 1.0
+      },
+      "test": {
+        "accuracy": 0.2,
+        "macro_f1": 0.1667,
+        "hope_f1": 0.3333,
+        "hope_precision": 0.2,
+        "hope_recall": 1.0
+      },
+      "minutes": 0.2
+    },
+    {
+      "kind": "frozen",
+      "model": "xlm-roberta-base",
+      "lang": "tamil",
+      "best_C": 0.1,
+      "C_grid": [
+        {
+          "C": 0.01,
+          "dev_macro_f1": 0.5894
+        },
+        {
+          "C": 0.1,
+          "dev_macro_f1": 0.6134
+        },
+        {
+          "C": 1.0,
+          "dev_macro_f1": 0.6099
+        },
+        {
+          "C": 10.0,
+          "dev_macro_f1": 0.6018
+        }
+      ],
+      "dev": {
+        "accuracy": 0.6202,
+        "macro_f1": 0.6134,
+        "hope_f1": 0.5622,
+        "hope_precision": 0.5582,
+        "hope_recall": 0.5663
+      },
+      "test": {
+        "accuracy": 0.6244,
+        "macro_f1": 0.6205,
+        "hope_f1": 0.582,
+        "hope_precision": 0.5987,
+        "hope_recall": 0.5661
+      },
+      "minutes": 2.11
+    },
+    {
+      "kind": "frozen",
+      "model": "google/muril-base-cased",
+      "lang": "tamil",
+      "best_C": 0.1,
+      "C_grid": [
+        {
+          "C": 0.01,
+          "dev_macro_f1": 0.5477
+        },
+        {
+          "C": 0.1,
+          "dev_macro_f1": 0.5482
+        },
+        {
+          "C": 1.0,
+          "dev_macro_f1": 0.5482
+        },
+        {
+          "C": 10.0,
+          "dev_macro_f1": 0.5482
+        }
+      ],
+      "dev": {
+        "accuracy": 0.5505,
+        "macro_f1": 0.5482,
+        "hope_f1": 0.5157,
+        "hope_precision": 0.4811,
+        "hope_recall": 0.5557
+      },
+      "test": {
+        "accuracy": 0.5491,
+        "macro_f1": 0.5483,
+        "hope_f1": 0.5292,
+        "hope_precision": 0.5109,
+        "hope_recall": 0.5488
+      },
+      "minutes": 1.67
+    },
+    {
+      "kind": "frozen",
+      "model": "xlm-roberta-base",
+      "lang": "malayalam",
+      "best_C": 1.0,
+      "C_grid": [
+        {
+          "C": 0.01,
+          "dev_macro_f1": 0.6103
+        },
+        {
+          "C": 0.1,
+          "dev_macro_f1": 0.6872
+        },
+        {
+          "C": 1.0,
+          "dev_macro_f1": 0.7092
+        },
+        {
+          "C": 10.0,
+          "dev_macro_f1": 0.709
+        }
+      ],
+      "dev": {
+        "accuracy": 0.7784,
+        "macro_f1": 0.7092,
+        "hope_f1": 0.5674,
+        "hope_precision": 0.4593,
+        "hope_recall": 0.7421
+      },
+      "test": {
+        "accuracy": 0.7793,
+        "macro_f1": 0.7165,
+        "hope_f1": 0.5832,
+        "hope_precision": 0.4686,
+        "hope_recall": 0.772
+      },
+      "minutes": 1.33
+    },
+    {
+      "kind": "frozen",
+      "model": "google/muril-base-cased",
+      "lang": "malayalam",
+      "best_C": 10.0,
+      "C_grid": [
+        {
+          "C": 0.01,
+          "dev_macro_f1": 0.5623
+        },
+        {
+          "C": 0.1,
+          "dev_macro_f1": 0.5623
+        },
+        {
+          "C": 1.0,
+          "dev_macro_f1": 0.6338
+        },
+        {
+          "C": 10.0,
+          "dev_macro_f1": 0.6883
+        }
+      ],
+      "dev": {
+        "accuracy": 0.7557,
+        "macro_f1": 0.6883,
+        "hope_f1": 0.5434,
+        "hope_precision": 0.4286,
+        "hope_recall": 0.7421
+      },
+      "test": {
+        "accuracy": 0.7637,
+        "macro_f1": 0.7055,
+        "hope_f1": 0.5746,
+        "hope_precision": 0.449,
+        "hope_recall": 0.7979
+      },
+      "minutes": 1.11
+    }
+  ]
+}
