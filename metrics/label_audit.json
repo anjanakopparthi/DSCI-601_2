@@ -1,0 +1,60 @@
+{
+  "tamil": {
+    "rows": 400,
+    "usable": 400,
+    "unparsed": 0,
+    "n": 400,
+    "agreement": 0.545,
+    "kappa": 0.09,
+    "macro_f1": 0.4634,
+    "llm_hope_rate": 0.11,
+    "gold_hope_rate": 0.5
+  },
+  "english": {
+    "rows": 400,
+    "usable": 120,
+    "unparsed": 280,
+    "n": 120,
+    "agreement": 0.7583,
+    "kappa": 0.5161,
+    "macro_f1": 0.7579,
+    "llm_hope_rate": 0.5083,
+    "gold_hope_rate": 0.5333
+  },
+  "malayalam": {
+    "rows": 400,
+    "usable": 400,
+    "unparsed": 0,
+    "n": 400,
+    "agreement": 0.855,
+    "kappa": 0.71,
+    "macro_f1": 0.8541,
+    "llm_hope_rate": 0.42,
+    "gold_hope_rate": 0.5
+  },
+  "tamil_by_script": {
+    "native": {
+      "n": 62,
+      "agreement": 0.5484,
+      "kappa": 0.1473,
+      "macro_f1": 0.5162,
+      "llm_hope_rate": 0.1935,
+      "gold_hope_rate": 0.5484
+    },
+    "romanized": {
+      "n": 338,
+      "agreement": 0.5444,
+      "kappa": 0.0755,
+      "macro_f1": 0.45,
+      "llm_hope_rate": 0.0947,
+      "gold_hope_rate": 0.4911
+    }
+  },
+  "inspection": {
+    "cell": "gold=Hope, LLM=Non_hope, native script",
+    "candidates": 25,
+    "inspected": 20,
+    "judged_hope_by_annotator": 2,
+    "note": "Manual inspection of the first 20, via translation. Two were plausibly hope (one clearly, one weakly). The remainder were content requests, questions, political commentary or complaints, and one was explicit dehumanising hate speech. This is the disagreement cell, not a random sample, so it is an existence proof and not a dataset noise rate."
+  }
+}
