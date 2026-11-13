@@ -1,0 +1,43 @@
+{
+  "lang": "english",
+  "n_adjudicated": 59,
+  "n_skipped": 0,
+  "kappa_vs_gold_sample": 0.16619559072922552,
+  "kappa_vs_llm_sample": 0.655373831775701,
+  "agreement_vs_gold_sample": 0.576271186440678,
+  "agreement_vs_llm_sample": 0.8305084745762712,
+  "kappa_vs_gold": 0.4850140751780097,
+  "kappa_vs_llm": 0.7299110887434994,
+  "agreement_vs_gold": 0.7408333333333333,
+  "agreement_vs_llm": 0.8658333333333333,
+  "pool_usable": 120,
+  "pool_agree": 91,
+  "pool_disagree": 29,
+  "cells": {
+    "agree": {
+      "sampled": 30,
+      "overturned": 3,
+      "rate": 0.1,
+      "ci": [
+        0.03459925995971616,
+        0.25621441315266624
+      ],
+      "pool_size": 91
+    },
+    "disagree": {
+      "sampled": 29,
+      "overturned": 22,
+      "rate": 0.7586206896551724,
+      "ci": [
+        0.5789204778167132,
+        0.8778173181493787
+      ],
+      "pool_size": 29
+    }
+  },
+  "noise_rate": 0.25916666666666666,
+  "noise_ci": [
+    0.1661435542751571,
+    0.40643511519353837
+  ]
+}

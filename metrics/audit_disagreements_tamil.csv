@@ -1,0 +1,39 @@
+row_id,text,my_label,label,llm_label,cell,note,script,verdict
+ta0301,Anna superaa sonega,0,1,1,agree,,romanized,guideline
+ta0393,15 mins la evlo content...n9PM to 10PM is fine...,0,1,0,disagree,,romanized,gold_error
+ta0373,Bro 8.30 pm video upload pannuga,0,1,0,disagree,,romanized,gold_error
+ta0235,Yeasu kirusthu ... Vara poraru ... 8 நீங்களும் நீடிய பொறுமையோடிருந்து,1,0,1,disagree,,native,guideline
+ta0274,மாரிதாஸ் மதன் பற்றி பேசுங்கள் pls,0,1,0,disagree,,native,gold_error
+ta0189,Like app chinese appa bro,0,1,0,disagree,,romanized,gold_error
+ta0254,Movie la NAIL BITTING moment...for neet,0,1,0,disagree,,romanized,gold_error
+ta0185,இதென்ன computer ah Delete பன்ன ஒலராத,0,1,0,disagree,,romanized,gold_error
+ta0062,India jayikum jai hindh,1,0,1,disagree,,romanized,guideline
+ta0156,யானைகள் திட்டமிட்டு கொல்லப்படுது sister...,0,1,0,disagree,,native,gold_error
+ta0163,New India mobile vovo neenga start pannunaga MG nalla support kedaikum,0,1,1,agree,,romanized,guideline
+ta0036,என் குழந்தையின் பாதி பொம்மைகள் made in china.,0,1,0,disagree,,native,gold_error
+ta0065,Covacine pathi sollunga,0,1,0,disagree,,romanized,gold_error
+ta0064,Mx player la um files transfer panalam,0,1,0,disagree,,romanized,gold_error
+ta0071,Spr Ithan sariyana valli,0,1,1,agree,,romanized,guideline
+ta0103,1 stage irruku vaccination,0,1,0,disagree,,romanized,gold_error
+ta0120,Bro covaccine pathi podala,0,1,0,disagree,,romanized,gold_error
+ta0308,Bro china kkum pakistan kkum contact irukka bro solunga bcz corona virus ah pathi many countries la irundhu news varudhu but pakistan ah pathi news ah varala y bro,0,1,0,disagree,,romanized,gold_error
+ta0034,Oruthar nenacha mudiyathu.... But ovvorutharum nenacha kandippa mudiyum...,1,0,1,disagree,,romanized,gold_error
+ta0046,கொரனா வைரஸ்ல முதல் ஆளா பாதிக்கப்பட்டிருப்ப போல🤔 அதிகம் பதற்றம் தெரியுது,0,1,0,disagree,,native,gold_error
+ta0080,Today corena nilavaram solllula bro?,0,1,0,disagree,,romanized,gold_error
+ta0338,Supper Anna nennga yella news nalla solringa,0,1,1,agree,,romanized,guideline
+ta0044,Super video bro,0,1,1,agree,,romanized,guideline
+ta0079,Savu ku payara alu ila tamilans apadi payantha valurathula artham ila,1,0,1,disagree,,romanized,guideline
+ta0171,I am your big fan,0,1,1,agree,,romanized,guideline
+ta0057,Bro na inum micromax tha use pandren,0,1,0,disagree,,romanized,gold_error
+ta0182,Pubg kku padhil freefire bro,0,1,0,disagree,,romanized,gold_error
+ta0028,Great modi g great bjp Hindustan jindabadh,1,0,1,disagree,,romanized,guideline
+ta0193,Kutty pasanga sir,0,1,0,disagree,,romanized,gold_error
+ta0173,Mr. Madhan India vala yedhium face pana mudium nu soluratukaga than intha mariyana move nu nan ninaikuren illa neenga china ku thn sompuu adipeengana adinga no issue.,0,1,0,disagree,,romanized,gold_error
+ta0128,Neenga epo potalum na pathuruveann yeana ungaloda voice and ungalodda videos Kum na periya fan and Kerala ipo poitu iruga padmanadha swami kovil Patriya latest news ah pathi video podunga we r waiting,0,1,1,agree,,romanized,guideline
+ta0332,Madan Gowri Anna fans like here,0,1,0,disagree,,romanized,gold_error
+ta0305,ஏனப்பா பாகிஸ்தான் மீது இந்தியா ஓடி ஓடி அடிப்பது போல் சீனவையும் ஒரு கை பார்தார்தால் நல்ல இருக்குமே..,0,1,0,disagree,,native,gold_error
+ta0140,Un channel la antha app ah vachuthana sambarikra like tiktok bigo,0,1,0,disagree,,romanized,gold_error
+ta0146,நான் எனது சேனலில் அறிவியல் மற்றும் எடிட்டிங் பற்றிய வீடியோக்களை பதிவிடுகிறேன். விருப்பமிருந்தால் check செய்து பாருங்கள். கண்டிப்பாக உங்களுக்கு பிடிக்கும்!nn I'm uploading videos about science and editing tips. If you want to see,0,1,1,agree,,native,guideline
+ta0115,Thankyou anna,0,1,1,agree,,romanized,guideline
+ta0256,Jio phone epti nanba,0,1,0,disagree,,romanized,gold_error
+ta0247,Ambanitha aditha pm ma varanum,0,1,0,disagree,,romanized,gold_error
