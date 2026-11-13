@@ -1,0 +1,43 @@
+{
+  "lang": "malayalam",
+  "n_adjudicated": 69,
+  "n_skipped": 1,
+  "kappa_vs_gold_sample": 0.19069239500567525,
+  "kappa_vs_llm_sample": 0.2832861189801701,
+  "agreement_vs_gold_sample": 0.5507246376811594,
+  "agreement_vs_llm_sample": 0.6811594202898551,
+  "kappa_vs_gold": 0.437504340866917,
+  "kappa_vs_llm": 0.47550675958056854,
+  "agreement_vs_gold": 0.7112692307692308,
+  "agreement_vs_llm": 0.7447307692307692,
+  "pool_usable": 400,
+  "pool_agree": 342,
+  "pool_disagree": 58,
+  "cells": {
+    "agree": {
+      "sampled": 30,
+      "overturned": 7,
+      "rate": 0.23333333333333334,
+      "ci": [
+        0.11792239210501226,
+        0.4092867233032426
+      ],
+      "pool_size": 342
+    },
+    "disagree": {
+      "sampled": 39,
+      "overturned": 24,
+      "rate": 0.6153846153846154,
+      "ci": [
+        0.4589878131007847,
+        0.7510883745299293
+      ],
+      "pool_size": 58
+    }
+  },
+  "noise_rate": 0.28873076923076924,
+  "noise_ci": [
+    0.16737687814939928,
+    0.45884796273111217
+  ]
+}
